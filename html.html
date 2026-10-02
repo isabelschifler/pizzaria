@@ -5,48 +5,58 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pizzaiolo Lógico: montando pizzas com SAT</title>
 <style>
-:root{--bg:#fbfaf7;--fg:#22201c;--mu:#6a655d;--card:#fff;--ln:#e5e0d6;--ac:#c8321f;--as:#fbe6e1;--gr:#2f7d4a;--gs:#e0f1e6;--bd:#b3261e;--bs:#fbe3df;--cd:#f2efe8}
-@media(prefers-color-scheme:dark){:root{--bg:#171513;--fg:#ece8e1;--mu:#a59f94;--card:#211e1b;--ln:#36322c;--ac:#ff7a66;--as:#3a1f1a;--gr:#5fd08a;--gs:#16301f;--bd:#ff8a7d;--bs:#3a1d1a;--cd:#292521}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 Georgia,"Times New Roman",serif}
-h1,h2,h3,button,th,nav,.sans{font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
-.w{max-width:960px;margin:0 auto;padding:0 16px}
-header{background:var(--ac);color:#fff;padding:40px 0 30px}
-header h1{font-size:clamp(1.8rem,5vw,2.8rem);line-height:1.1;margin:0 0 .3em}header p{max-width:700px;margin:.3em 0}
-nav{position:sticky;top:0;background:var(--card);border-bottom:1px solid var(--ln);z-index:5}
-nav .w{display:flex;gap:4px;overflow-x:auto;padding:6px 16px}nav a{white-space:nowrap;color:var(--mu);text-decoration:none;font-size:.85rem;padding:4px 10px;border-radius:6px}nav a:hover{background:var(--as);color:var(--ac)}
-section{padding:28px 0 4px;scroll-margin-top:44px}h2{font-size:1.45rem;margin:0 0 .4em}h3{font-size:1.05rem;margin:1.2em 0 .3em}
-code,pre,.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.88em}code{background:var(--cd);padding:1px 5px;border-radius:4px}
-pre{background:var(--cd);padding:12px;border-radius:8px;overflow-x:auto;line-height:1.45}
-.tw{overflow-x:auto;border:1px solid var(--ln);border-radius:8px;background:var(--card);margin:10px 0}
-table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{padding:7px 11px;border-bottom:1px solid var(--ln);text-align:left;vertical-align:top}th{background:var(--as)}tr:last-child td{border:0}
-.f{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--cd);padding:10px 14px;border-radius:8px;overflow-x:auto;white-space:nowrap}
-.co{border-left:4px solid var(--ac);background:var(--as);padding:10px 14px;border-radius:0 8px 8px 0;margin:12px 0}
+:root{--bg:#fffdf7;--fg:#241c18;--mu:#6b6258;--card:#fff;--ln:#e6dccb;--ac:#c8102e;--as:#fdecea;--gr:#1f5a3a;--gs:#e3f2e8;--bd:#b3261e;--bs:#fbe3df;--cd:#f4eee2;--gh:rgba(200,16,46,.28)}
+@media(prefers-color-scheme:dark){:root{--bg:#10201a;--fg:#f1ebdd;--mu:#a9b3a6;--card:#183027;--ln:#2f4a3e;--ac:#ff6b7f;--as:#3a2328;--gr:#6fd08f;--gs:#173a27;--bd:#ff8a7d;--bs:#3a1d1a;--cd:#1f3a2f;--gh:rgba(255,107,127,.22)}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif}
+h1,h2,h3,summary,th{font-family:Rockwell,"Roboto Slab","Rockwell Extra Bold",Georgia,serif}
+.w{max-width:900px;margin:0 auto;padding:0 16px}
+header{background-color:var(--card);background-image:linear-gradient(90deg,var(--gh) 50%,transparent 50%),linear-gradient(var(--gh) 50%,transparent 50%);background-size:34px 34px;border-bottom:4px solid var(--ac);padding:34px 0 40px}
+.placa{background:var(--card);border:3px solid var(--ac);border-radius:6px;padding:20px 24px;max-width:660px;box-shadow:6px 6px 0 var(--ac)}
+.placa small{color:var(--mu)}.placa h1{font-size:clamp(1.8rem,5vw,2.6rem);line-height:1.1;margin:.25em 0 .3em}.placa p{margin:.3em 0}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--ln)}
+nav .w{display:flex;gap:6px;overflow-x:auto;padding:8px 16px}nav a{white-space:nowrap;text-decoration:none;color:var(--fg);font-size:.86rem;padding:4px 12px;border:1px solid var(--ln);border-radius:999px;background:var(--card)}nav a:hover{border-color:var(--ac);color:var(--ac)}
+section{padding:26px 0 4px;scroll-margin-top:50px}
+h2{font-size:1.5rem;margin:0 0 .5em;padding-bottom:.2em;border-bottom:3px dotted var(--ac)}h3{font-size:1.08rem;margin:1.3em 0 .3em}
+code,pre,.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.88em}code{background:var(--cd);border:1px solid var(--ln);padding:0 5px;border-radius:4px}
+pre{background:var(--cd);border:1px solid var(--ln);padding:12px;border-radius:6px;overflow-x:auto;line-height:1.45}
+.tw{overflow-x:auto;border:2px dashed var(--ln);border-radius:6px;background:var(--card);margin:10px 0}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{padding:7px 11px;border-bottom:1px dotted var(--ln);text-align:left;vertical-align:top}th{background:var(--as);font-size:.9rem}tr:last-child td{border:0}
+.f{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--cd);border-left:5px solid var(--ac);padding:10px 14px;overflow-x:auto;white-space:nowrap}
+.co{border:2px dashed var(--ac);background:var(--as);padding:10px 14px;border-radius:6px;margin:12px 0}
 .ok{color:var(--gr);font-weight:700}.bad{color:var(--bd);font-weight:700}.mu{color:var(--mu)}
-button{font:inherit;font-size:.92rem;cursor:pointer;border-radius:8px;border:1px solid var(--ln);background:var(--card);color:var(--fg);padding:7px 12px}
-button:hover{border-color:var(--ac)}button:focus-visible,input:focus-visible{outline:2px solid var(--ac);outline-offset:2px}button.p{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:700}button:disabled{opacity:.45;cursor:not-allowed}
-input{font:inherit;font-family:ui-monospace,Menlo,monospace;width:100%;padding:9px 11px;border-radius:8px;border:1px solid var(--ln);background:var(--card);color:var(--fg)}
+button{font:inherit;font-size:.92rem;cursor:pointer;border-radius:6px;border:2px solid var(--ln);background:var(--card);color:var(--fg);padding:6px 12px}
+button:hover{border-color:var(--ac)}button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
+button.p{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:700}button:disabled{opacity:.45;cursor:not-allowed}
+input{font:inherit;font-family:ui-monospace,Menlo,monospace;width:100%;padding:9px 11px;border-radius:6px;border:2px solid var(--ln);background:var(--card);color:var(--fg)}
 .row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
-.card{background:var(--card);border:1px solid var(--ln);border-radius:10px;padding:14px 16px;margin:12px 0}
-details{background:var(--card);border:1px solid var(--ln);border-radius:8px;padding:8px 12px;margin:8px 0}summary{cursor:pointer;font-weight:700;font-family:system-ui,sans-serif}
+.card{background:var(--card);border:2px dashed var(--ac);border-radius:6px;padding:14px 16px;margin:12px 0}
+details{background:var(--card);border:1px solid var(--ln);border-radius:6px;padding:8px 12px;margin:8px 0}summary{cursor:pointer;font-weight:700}
+dl{margin:8px 0}dt{font-weight:700;margin-top:.7em;font-family:Rockwell,Georgia,serif}dd{margin:0}
 .tr{list-style:none;padding:0;margin:0;font-family:ui-monospace,Menlo,monospace;font-size:.85rem}.tr .unit{color:var(--gr)}.tr .dec{color:var(--ac)}.tr .conflito{color:var(--bd);font-weight:700}.tr .back{color:var(--mu)}.tr .sat{color:var(--gr);font-weight:700}
-.pz{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:2px dashed var(--ln);border-radius:10px;min-height:66px;margin:6px 0;align-items:center}
+.pz{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:2px dashed var(--ln);border-radius:50px;min-height:66px;margin:6px 0;align-items:center}
 .pz.on{background:var(--as);border-color:var(--ac)}
 .ing{display:flex;align-items:center;gap:6px;border-radius:999px;padding:6px 12px}
-.rg{list-style:none;padding:0;margin:6px 0}.rg li{padding:6px 10px;border-radius:8px;margin:4px 0;background:var(--bs)}.rg li.s{background:var(--gs)}
-.pl{display:flex;justify-content:space-between;background:#22201c;color:#fff;border-radius:10px;padding:8px 14px;font-family:system-ui,sans-serif}.pl b{color:#ffd166;font-size:1.3rem}
-.fb{margin-top:10px;padding:11px 14px;border-radius:8px;background:var(--as)}.fb.g{background:var(--gs)}.fb.r{background:var(--bs)}
-footer{padding:26px 0 44px;color:var(--mu);font-size:.9rem}
+.rg{list-style:none;padding:0;margin:6px 0}.rg li{padding:6px 10px;border-radius:6px;margin:4px 0;background:var(--bs);border-left:5px solid var(--bd)}.rg li.s{background:var(--gs);border-color:var(--gr)}
+.pl{display:flex;justify-content:space-between;background:var(--gr);color:#fff;border-radius:6px;padding:8px 14px}.pl b{font-size:1.3rem}
+.fb{margin-top:10px;padding:11px 14px;border-radius:6px;background:var(--as)}.fb.g{background:var(--gs)}.fb.r{background:var(--bs)}
+footer{padding:26px 0 44px;color:var(--mu);font-size:.9rem;border-top:3px dotted var(--ln);margin-top:30px}
 </style>
 </head>
 <body>
-<header><div class="w">
-<div class="sans">Lógica para Computação · Engenharia da Computação · [Grupo X: nomes]</div>
+<header><div class="w"><div class="placa"><small>Lógica para Computação · Engenharia da Computação · [Grupo X: nomes]</small>
 <h1>Pizzaiolo Lógico: montando pizzas com SAT</h1>
-<p>Representação de fórmulas, satisfatibilidade, forma normal conjuntiva e DPLL aplicados a uma pergunta de pizzaria: existe uma pizza que respeita todas as regras do cliente e da cozinha?</p>
-</div></header>
-<nav aria-label="Seções"><div class="w"><a href="#contexto">1 Contexto</a><a href="#repr">2 Representação</a><a href="#sat">3 SAT</a><a href="#fnc">4 FNC</a><a href="#lab">5 Laboratório</a><a href="#jogo">6 Jogo</a><a href="#testes">7 Testes</a><a href="#codigo">8 Código</a><a href="#roteiro">9 Roteiro</a></div></nav>
+<p>Existe uma pizza que respeita todas as regras do cliente e da cozinha? Usamos lógica proposicional, SAT, FNC e DPLL para descobrir.</p></div></div></header>
+<nav aria-label="Seções"><div class="w"><a href="#mapa">Critérios</a><a href="#contexto">1 Contexto</a><a href="#repr">2 Representação</a><a href="#sat">3 SAT</a><a href="#fnc">4 FNC</a><a href="#lab">5 Laboratório</a><a href="#jogo">6 Jogo</a><a href="#testes">7 Testes</a><a href="#codigo">8 Código</a><a href="#roteiro">9 Roteiro</a><a href="#gloss">10 Glossário</a></div></nav>
 <main class="w">
 
+<section id="mapa"><h2>Mapa dos critérios</h2><div class="tw"><table><thead><tr><th>Critério</th><th>Onde</th></tr></thead><tbody>
+<tr><td>C1 Representação computacional</td><td>Seção 2: gramática, precedência, árvore, notação prefixa, DAG</td></tr>
+<tr><td>C2 Satisfatibilidade e busca de modelos</td><td>Seção 3: força bruta, NP-completude, DPLL à mão e no programa</td></tr>
+<tr><td>C3 Forma normal conjuntiva</td><td>Seção 4: conversão das regras, DIMACS, explosão, Tseitin</td></tr>
+<tr><td>C4 Implementação</td><td>Seções 5, 7 e 8: laboratório, testes automáticos e código</td></tr>
+<tr><td>C5 Modelagem</td><td>Seção 1: variáveis, regras e variante impossível</td></tr>
+<tr><td>C6 Comunicação / C7 Arguição</td><td>Seção 9: roteiro e perguntas prováveis; seção 6: jogo para a demonstração</td></tr>
+<tr><td>Bônus</td><td>Parser de texto, rastro do DPLL e jogo interativo</td></tr></tbody></table></div></section>
 <section id="contexto"><h2>1 Contexto e modelagem</h2>
 <p>Na pizzaria, o cliente monta a pizza escolhendo ingredientes, e a cozinha impõe regras de combinação. Cada ingrediente é uma <strong>variável proposicional</strong>: verdadeiro = vai na pizza, falso = fica de fora. A pergunta: <em>existe uma combinação que atende a todas as regras? Qual?</em></p>
 <div class="tw"><table><thead><tr><th>Variável</th><th>Ingrediente</th></tr></thead><tbody id="t-var"></tbody></table></div>
@@ -54,7 +64,7 @@ footer{padding:26px 0 44px;color:var(--mu);font-size:.9rem}
 <div class="tw"><table><thead><tr><th>#</th><th>Em português</th><th>Fórmula</th></tr></thead><tbody id="t-reg"></tbody></table></div>
 <p>O problema completo é a conjunção das sete regras:</p>
 <div class="f">Φ = R1 ∧ R2 ∧ R3 ∧ R4 ∧ R5 ∧ R6 ∧ R7</div>
-<p>Uma pizza válida é um <strong>modelo</strong> de Φ. O programa encontra <strong id="n-mod">…</strong> pizzas válidas entre as 256 combinações de 8 ingredientes. Exemplo: <span class="mono" id="ex-mod"></span>.</p>
+<p>Uma pizza válida é um <strong>modelo</strong> de Φ. O código desta página (seção 8) testa as 256 combinações de 8 ingredientes por força bruta e encontra <strong id="n-mod">…</strong> pizzas válidas. Exemplo: <span class="mono" id="ex-mod"></span>.</p>
 <h3>Variante insatisfatível: cliente intolerante à lactose</h3>
 <p>Acrescentamos <code>¬M</code> e <code>¬G</code> (sem muçarela e sem gorgonzola). Então R1 (precisa de algum queijo) não pode ser satisfeita: <code>Φ ∧ ¬M ∧ ¬G</code> é <strong>insatisfatível</strong>. Resultado do DPLL agora: <span id="r-dpll"></span>.</p>
 </section>
@@ -134,6 +144,7 @@ unario  ::= "¬" unario | VARIAVEL | "(" bicond ")"</pre>
 <details><summary>Como sabem que a FNC está certa?</summary><p>Os testes comparam a tabela-verdade da original com a da FNC em todas as valorações.</p></details>
 <p class="mu"><strong>Limitações:</strong> o DPLL não aprende cláusulas (não é CDCL), não usa literal puro e a heurística de decisão é simples. <strong>Uso de IA:</strong> [declarar aqui, conforme exigido na atividade].</p>
 </section>
+<section id="gloss"><h2>10 Glossário</h2><details><summary>Abrir glossário</summary><dl><dt>Cláusula</dt><dd>“Ou” de literais, como (¬C ∨ R).</dd><dt>Cláusula vazia (□)</dt><dd>Cláusula sem literais: nunca é verdadeira e indica conflito.</dd><dt>DIMACS</dt><dd>Formato de texto padrão para entregar uma FNC a um resolvedor SAT.</dd><dt>DPLL</dt><dd>Algoritmo de busca de modelos: propaga o que é obrigatório e chuta com retrocesso.</dd><dt>Equisatisfatível</dt><dd>Duas fórmulas são equisatisfatíveis quando uma tem modelo se, e só se, a outra tem.</dd><dt>FNC</dt><dd>Fórmula escrita como “e” de cláusulas.</dd><dt>Literal</dt><dd>Uma variável ou a negação dela.</dd><dt>Modelo</dt><dd>Valoração que torna a fórmula verdadeira. Aqui, uma pizza que respeita todas as regras.</dd><dt>NP-completo</dt><dd>Os problemas mais difíceis da classe NP; SAT foi o primeiro provado assim.</dd><dt>Propagação unitária</dt><dd>Cláusula com um só literal livre obriga esse literal.</dd><dt>Retrocesso</dt><dd>Voltar atrás e tentar a outra opção depois de um conflito.</dd><dt>Tseitin</dt><dd>Conversão para FNC que cria variáveis novas e mantém o tamanho linear.</dd><dt>Valoração</dt><dd>Atribuir V ou F a todas as variáveis.</dd></dl></details></section>
 </main>
 <footer><div class="w">Lógica para Computação · Engenharia da Computação · 5ª fase</div></footer>
 
