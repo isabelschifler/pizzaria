@@ -29,9 +29,19 @@ input{font:inherit;font-family:ui-monospace,Menlo,monospace;width:100%;padding:9
 .card{background:var(--card);border:1px solid var(--ln);border-radius:10px;padding:14px 16px;margin:12px 0}
 details{background:var(--card);border:1px solid var(--ln);border-radius:8px;padding:8px 12px;margin:8px 0}summary{cursor:pointer;font-weight:700;font-family:system-ui,sans-serif}
 .tr{list-style:none;padding:0;margin:0;font-family:ui-monospace,Menlo,monospace;font-size:.85rem}.tr .unit{color:var(--gr)}.tr .dec{color:var(--ac)}.tr .conflito{color:var(--bd);font-weight:700}.tr .back{color:var(--mu)}.tr .sat{color:var(--gr);font-weight:700}
-.pz{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:2px dashed var(--ln);border-radius:10px;min-height:66px;margin:6px 0;align-items:center}
-.pz.on{background:var(--as);border-color:var(--ac)}
-.ing{display:flex;align-items:center;gap:6px;border-radius:999px;padding:6px 12px}
+.mesa{display:grid;grid-template-columns:minmax(220px,320px) 1fr;gap:18px;align-items:center;margin:10px 0}
+@media(max-width:640px){.mesa{grid-template-columns:1fr}}
+.pizza{max-width:320px;margin:0 auto;filter:drop-shadow(0 8px 10px rgba(0,0,0,.28))}
+.pizza svg{width:100%;height:auto;display:block}
+.pizza.ok{animation:pulo .6s}.pizza.shake{animation:shake .45s}
+@keyframes pulo{30%{transform:translateY(-14px) scale(1.04)}60%{transform:translateY(0) scale(.98)}100%{transform:none}}
+@keyframes shake{20%,60%{transform:translateX(-9px) rotate(-2deg)}40%,80%{transform:translateX(9px) rotate(2deg)}100%{transform:none}}
+.pc{opacity:0;transform:translateY(-46px) scale(1.5);transform-box:fill-box;transform-origin:center;transition:opacity .25s,transform .4s cubic-bezier(.3,1.5,.5,1);transition-delay:var(--d,0ms)}
+.ig.on .pc{opacity:1;transform:none}
+.tray{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.ing{display:flex;align-items:center;gap:10px;text-align:left;padding:10px 12px;border-radius:10px}
+.ing .em{font-size:1.7rem;line-height:1}.ing small{display:block;color:var(--mu)}
+.ing.on{border-color:var(--ac);background:var(--as);font-weight:700}
 .rg{list-style:none;padding:0;margin:6px 0}.rg li{padding:6px 10px;border-radius:8px;margin:4px 0;background:var(--bs)}.rg li.s{background:var(--gs)}
 .pl{display:flex;justify-content:space-between;background:#22201c;color:#fff;border-radius:10px;padding:8px 14px;font-family:system-ui,sans-serif}.pl b{color:#ffd166;font-size:1.3rem}
 .fb{margin-top:10px;padding:11px 14px;border-radius:8px;background:var(--as)}.fb.g{background:var(--gs)}.fb.r{background:var(--bs)}
@@ -100,15 +110,15 @@ unario  ::= "¬" unario | VARIAVEL | "(" bicond ")"</pre>
 </section>
 
 <section id="jogo"><h2>6 Jogo: Pizzaiolo Lógico 🍕</h2>
-<p>Cada rali é um cliente. <strong>Clique nos ingredientes</strong> para pôr na pizza (V) ou tirar (F) até todas as regras ficarem verdes, e então <strong>sirva</strong>. Alguns pedidos são impossíveis: aí o ponto vem de <strong>declarar INSAT</strong>. Você tem 2 dicas do DPLL.</p>
+<p>Cada rodada é um cliente. <strong>Clique nos ingredientes</strong> para pôr na pizza (V) ou tirar (F) até todas as regras ficarem verdes, e então <strong>sirva</strong>. Alguns pedidos são impossíveis: aí o ponto vem de <strong>declarar INSAT</strong>. Você tem 2 dicas do DPLL.</p>
 <div class="card"><div class="pl"><span>Cozinha <b id="pn">0</b></span><span id="pi"></span><span><b id="pe">0</b> Cliente</span></div>
 <h3 id="pt"></h3><div class="mu" id="pd"></div>
-<div class="sans mu">Na pizza (V)</div><div class="pz on" id="on"></div>
-<div class="sans mu">Fora da pizza (F)</div><div class="pz" id="off"></div>
-<ul class="rg" id="rg"></ul>
+<div class="mesa"><div class="pizza" id="pizza"><svg id="pz" viewBox="0 0 300 300" role="img"></svg></div>
+<div><div class="tray" id="tray"></div><ul class="rg" id="rg"></ul></div></div>
 <div class="row"><button class="p" id="b-serv">🍕 Servir esta pizza</button><button id="b-ins">🚫 Declarar INSAT</button><button id="b-dica">💡 Dica DPLL</button><button id="b-prox" hidden>Próximo cliente →</button><button id="b-re" hidden>↺ Jogar de novo</button></div>
 <div class="fb" id="fb"></div><div id="dica"></div></div>
 </section>
+
 
 <section id="testes"><h2>7 Testes automáticos</h2>
 <p>Rodam ao abrir a página: parser, força bruta × DPLL e equivalência da FNC com a fórmula original em todas as linhas da tabela-verdade.</p>
@@ -254,34 +264,52 @@ $('#ex').onclick=e=>{const b=e.target.closest('button');if(b){$('#in').value=EX[
 analisar();
 
 // Jogo
-const all='BCGMNOPT'.split(''),rs=i=>R[i-1];
+const GI={C:['Calabresa','🌭'],Q:['Queijo','🧀'],O:['Cebola','🧅'],F:['Frango','🍗']};
+const G=[['','Precisa de queijo.','Q'],['','Precisa de carne: calabresa ou frango.','C | F'],['','Calabresa e frango não combinam.','~(C & F)'],['','Calabresa pede cebola.','C -> O'],['','Frango não leva cebola.','F -> ~O']];
+const all='CQOF'.split('');
 const J=[
-{t:'Cliente 1 · Margherita',a:['M','G','T','N'],r:[rs(1),rs(2),rs(5),rs(6),['','Quer tomate na pizza.','T']],d:'Quatro ingredientes, cinco regras.',l:'Você achou um <strong>modelo</strong>. O pedido “T” é uma <strong>cláusula unitária</strong>: força T = V, e R5 (G → ¬T) força G = F por propagação.'},
-{t:'Cliente 2 · Pizza da casa',a:all,r:R,d:'As sete regras de Φ, oito ingredientes.',l:'É o Φ da seção 1: 256 combinações, várias válidas. Você provavelmente fixou algo, propagou e corrigiu, como o DPLL.'},
-{t:'Cliente 3 · Bacon com calabresa',a:all,r:[...R,['','Quer bacon e calabresa.','B & C']],d:'O pedido força duas variáveis.',l:'B = V e C = V forçam O = V (R4) e N = V (R7), e R3 força P = F. Quase tudo saiu por propagação, sem chute.'},
-{t:'Cliente 4 · Intolerante à lactose',a:all,r:[...R,['','Sem muçarela.','~M'],['','Sem gorgonzola.','~G']],d:'Existe pizza possível?',l:'<strong>Insatisfatível</strong>: ¬M e ¬G zeram os dois queijos e R1 vira a <strong>cláusula vazia</strong>. Provar impossibilidade exige olhar todas as possibilidades; o DPLL faz só com propagação.'},
-{t:'Match point · Gorgonzola com tomate',a:['G','T'],r:[['','Quer gorgonzola.','G'],['','Quer tomate.','T'],rs(5)],d:'Dois ingredientes, três regras.',l:'Insatisfatível: G = V e R5 forçam T = F, mas o cliente exige T. <strong>Verificar</strong> uma pizza é fácil (O(n)); <strong>provar</strong> que nenhuma existe é o que torna SAT difícil (P × NP).'}];
+{t:'Cliente 1 · Calabresa clássica',a:all,r:[G[0],G[1],G[2],['','Quer calabresa.','C']],d:'Quatro ingredientes, quatro regras.',l:'Você achou um <strong>modelo</strong>. O pedido “C” é uma <strong>cláusula unitária</strong>: força C = V, e a regra “calabresa e frango não combinam” força F = F por propagação.'},
+{t:'Cliente 2 · Pizza da casa',a:all,r:G,d:'As cinco regras da casa.',l:'Há duas pizzas válidas: queijo + calabresa + cebola, ou queijo + frango. Você provavelmente fixou algo, propagou e corrigiu, como o DPLL.'},
+{t:'Cliente 3 · Quer frango',a:all,r:[...G,['','Quer frango.','F']],d:'O pedido força uma variável.',l:'F = V força C = F (não combinam) e O = F (frango não leva cebola), e o queijo é obrigatório. Sobra uma única pizza: queijo + frango. Tudo saiu por propagação, sem chute.'},
+{t:'Cliente 4 · Sem queijo',a:all,r:[...G,['','Sem queijo.','~Q']],d:'Existe pizza possível?',l:'<strong>Insatisfatível</strong>: “Q” e “¬Q” são duas cláusulas unitárias opostas. Ao propagar uma, a outra vira a <strong>cláusula vazia</strong> □.'},
+{t:'Cliente 5 · Match point',a:['C','O'],r:[['','Quer calabresa.','C'],['','Sem cebola.','~O'],G[3]],d:'Dois ingredientes, três regras.',l:'Insatisfatível: C = V e “calabresa pede cebola” forçam O = V, mas o cliente exige sem cebola. <strong>Verificar</strong> uma pizza é fácil (O(n)); <strong>provar</strong> que nenhuma existe é o que torna SAT difícil (P × NP).'}];
 J.forEach(x=>{x.f=x.r.map(y=>L.parse(y[2]));x.cl=L.cnf(x.f.reduce((a,b)=>({t:'and',a,b}))).cl;x.sat=L.dpll(x.cl).sat});
+
+// Desenho da pizza: cada ingrediente é um grupo de peças que aparecem com animação
+const pos=(n,off,R)=>Array.from({length:n},(_,i)=>{const r=R*Math.sqrt((i+.5)/n),a=i*2.39996+off;return[150+r*Math.cos(a),150+r*Math.sin(a)]});
+const peca=(n,off,R,fn)=>pos(n,off,R).map((p,i)=>`<g transform="translate(${p[0].toFixed(1)} ${p[1].toFixed(1)}) rotate(${(i*47)%180})">${fn(i)}</g>`).join('');
+function montaPizza(){
+const q=`<circle class="pc" cx="150" cy="150" r="110" fill="#f7d36a"/>`+peca(16,.4,96,i=>`<rect class="pc" style="--d:${i*25}ms" x="-9" y="-2.5" width="18" height="5" rx="2.5" fill="#ffeaa3"/>`);
+const f=peca(9,1.1,92,i=>`<rect class="pc" style="--d:${i*40}ms" x="-10" y="-7" width="20" height="14" rx="6" fill="#f6e3c3" stroke="#c99a5c" stroke-width="1.6"/>`);
+const o=peca(13,2.3,98,i=>`<g class="pc" style="--d:${i*30}ms"><circle r="10" fill="none" stroke="#eadbf3" stroke-width="3.5"/><circle r="5" fill="none" stroke="#cfa9e0" stroke-width="2"/></g>`);
+const c=peca(8,.2,88,i=>`<g class="pc" style="--d:${i*45}ms"><circle r="17" fill="#b5342e" stroke="#7e1f1c" stroke-width="2"/><circle cx="-6" cy="-5" r="2.2" fill="#e8857a"/><circle cx="5" cy="-7" r="2.2" fill="#e8857a"/><circle cx="3" cy="6" r="2.2" fill="#e8857a"/><circle cx="-7" cy="5" r="2.2" fill="#e8857a"/></g>`);
+$('#pz').innerHTML=`<circle cx="150" cy="150" r="148" fill="#9a6a3a" stroke="#7a5128" stroke-width="3"/><circle cx="150" cy="154" r="134" fill="rgba(0,0,0,.25)"/><circle cx="150" cy="150" r="132" fill="#d99b4a"/><circle cx="150" cy="150" r="120" fill="#f0bd6a"/><circle cx="150" cy="150" r="112" fill="#c63f27"/><g class="ig" id="ig-Q">${q}</g><g class="ig" id="ig-F">${f}</g><g class="ig" id="ig-O">${o}</g><g class="ig" id="ig-C">${c}</g>`}
+montaPizza();
+
 let s;const fbk=(h,c='')=>{const e=$('#fb');e.className='fb '+c;e.innerHTML=h};
+const anima=c=>{const p=$('#pizza');p.classList.remove('ok','shake');void p.getBoundingClientRect();p.classList.add(c)};
 function novo(){s={i:0,n:0,e:0,d:2};ini()}
-function ini(){const x=J[s.i];s.v=Object.fromEntries(x.a.map(a=>[a,false]));s.ok=false;$('#dica').innerHTML='';$('#b-prox').hidden=$('#b-re').hidden=true;fbk(esc(x.d)+' <span class="mu">Clique nos ingredientes.</span>');draw()}
-const chip=a=>`<button class="ing" data-a="${a}" ${s.ok?'disabled':''}>${ING[a][1]} ${ING[a][0]} <small>(${a})</small></button>`;
+function ini(){const x=J[s.i];s.v=Object.fromEntries(x.a.map(a=>[a,false]));s.ok=false;$('#dica').innerHTML='';$('#b-prox').hidden=$('#b-re').hidden=true;$('#pizza').classList.remove('ok','shake');fbk(esc(x.d)+' <span class="mu">Clique nos ingredientes.</span>');draw()}
+const chip=a=>`<button class="ing${s.v[a]?' on':''}" data-a="${a}" aria-pressed="${!!s.v[a]}" ${s.ok?'disabled':''}><span class="em">${GI[a][1]}</span><span>${GI[a][0]}<small>(${a}) ${s.v[a]?'V · na pizza':'F · fora'}</small></span></button>`;
 function draw(){const x=J[s.i];$('#pn').textContent=s.n;$('#pe').textContent=s.e;$('#pi').textContent=`${x.t.split(' · ')[0]} de ${J.length} · ${s.d} dica${s.d===1?'':'s'}`;$('#pt').textContent=x.t;
 $('#pd').textContent=`${x.a.length} ingredientes · ${x.r.length} regras · ${2**x.a.length} pizzas possíveis`;
-$('#on').innerHTML=x.a.filter(a=>s.v[a]).map(chip).join('')||'<span class="mu">Pizza vazia</span>';
-$('#off').innerHTML=x.a.filter(a=>!s.v[a]).map(chip).join('')||'<span class="mu">Tudo na pizza</span>';
+$('#tray').innerHTML=x.a.map(chip).join('');
+all.forEach(k=>$('#ig-'+k).classList.toggle('on',!!s.v[k]));
+const on=x.a.filter(a=>s.v[a]).map(a=>GI[a][0].toLowerCase());
+$('#pz').setAttribute('aria-label',on.length?'Pizza com '+on.join(', '):'Pizza só com molho');
 $('#rg').innerHTML=x.r.map((y,k)=>{const o=L.ev(x.f[k],s.v);return`<li class="${o?'s':''}">${o?'✅':'❌'} <code>${esc(L.str(x.f[k]))}</code> <span class="mu">${esc(y[1])}</span></li>`}).join('');
 $('#b-serv').disabled=$('#b-ins').disabled=s.ok;$('#b-dica').disabled=s.ok||!s.d}
-function fim(h){s.ok=true;draw();fbk(h,'g');if(s.i<J.length-1)$('#b-prox').hidden=false;else{fbk(h+`<hr><strong>${s.n>s.e?'🏆 Fim: a cozinha venceu!':s.n===s.e?'🤝 Fim: empate!':'😅 Fim: o cliente levou esta.'}</strong> Placar ${s.n} × ${s.e}.`,'g');$('#b-re').hidden=false}}
-$('#on').onclick=$('#off').onclick=e=>{const b=e.target.closest('button');if(b&&!s.ok){s.v[b.dataset.a]=!s.v[b.dataset.a];draw()}};
+function fim(h){s.ok=true;draw();anima('ok');fbk(h,'g');if(s.i<J.length-1)$('#b-prox').hidden=false;else{fbk(h+`<hr><strong>${s.n>s.e?'🏆 Fim: a cozinha venceu!':s.n===s.e?'🤝 Fim: empate!':'😅 Fim: o cliente levou esta.'}</strong> Placar ${s.n} × ${s.e}.`,'g');$('#b-re').hidden=false}}
+$('#tray').onclick=e=>{const b=e.target.closest('button');if(b&&!s.ok){s.v[b.dataset.a]=!s.v[b.dataset.a];draw()}};
 $('#b-serv').onclick=()=>{const x=J[s.i],q=x.r.filter((y,k)=>!L.ev(x.f[k],s.v));
 if(!q.length){s.n++;fim('🍕 <strong>Ponto!</strong> A pizza satisfaz todas as regras.<br>'+x.l)}
-else{s.e++;draw();fbk('❌ <strong>Ponto do cliente.</strong> Regra violada: <em>'+esc(q[0][1])+'</em>'+(x.sat?'':'<br><span class="mu">Dica: será que existe mesmo alguma pizza possível?</span>'),'r')}};
-$('#b-ins').onclick=()=>{const x=J[s.i];if(!x.sat){s.n++;fim('🚫 <strong>Ponto! Correto: não existe pizza possível.</strong><br>'+x.l)}else{s.e++;draw();fbk('❌ <strong>Ponto do cliente.</strong> Existe pelo menos uma pizza válida. Continue procurando ou peça uma dica.','r')}};
+else{s.e++;draw();anima('shake');fbk('❌ <strong>Ponto do cliente.</strong> Regra violada: <em>'+esc(q[0][1])+'</em>'+(x.sat?'':'<br><span class="mu">Dica: será que existe mesmo alguma pizza possível?</span>'),'r')}};
+$('#b-ins').onclick=()=>{const x=J[s.i];if(!x.sat){s.n++;fim('🚫 <strong>Ponto! Correto: não existe pizza possível.</strong><br>'+x.l)}else{s.e++;draw();anima('shake');fbk('❌ <strong>Ponto do cliente.</strong> Existe pelo menos uma pizza válida. Continue procurando ou peça uma dica.','r')}};
 $('#b-dica').onclick=()=>{if(!s.d)return;s.d--;const x=J[s.i],d=L.dpll(x.cl);$('#dica').innerHTML=`<details open><summary>💡 O DPLL analisa as ${x.cl.length} cláusulas</summary>${tr(d)}<p><strong>Conclusão:</strong> ${d.sat?'existe pizza; reproduza o rastro.':'não existe pizza possível.'}</p></details>`;draw()};
 $('#b-prox').onclick=()=>{s.i++;ini();$('#jogo').scrollIntoView({behavior:'smooth'})};$('#b-re').onclick=novo;novo();
 
 // Testes
+
 const T=[],t=(n,f,ok)=>T.push([n,f,ok]);
 ['A','A & ~A','A | ~A','A -> B -> C','(A -> B) -> C','~(A & B) <-> (~A | ~B)','(A -> B) <-> (~B -> ~A)',PHI,PHI+' & ~M & ~G','(X1 & Y1) | (X2 & Y2) | (X3 & Y3)','(P -> Q) & (Q -> R) & P & ~R'].forEach(c=>{
 const f=L.parse(c),q=L.tabela(f),cl=L.cnf(f).cl;let eq=true;
@@ -298,6 +326,9 @@ const ps=T.filter(x=>x[2]).length;
 $('#t-res').innerHTML=`<strong>${ps} de ${T.length} testes passaram</strong> ${ps===T.length?'✅':'❌'}`;
 $('#t-lin').innerHTML=T.map(x=>`<tr><td>${esc(x[0])}</td><td class="mono">${esc(x[1].length>50?x[1].slice(0,47)+'…':x[1])}</td><td>${x[2]?'✅':'❌'}</td></tr>`).join('');
 $('#src').textContent=$('#nucleo').textContent.trim();
+
+
+
 })();
 </script>
 </body>
