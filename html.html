@@ -104,12 +104,14 @@ footer{padding:26px 0 44px;color:var(--mu);font-size:.9rem}
 </section>
 
 <section id="repr"><h2>2 Representação computacional</h2>
-<p>A gramática ingênua é ambígua (<code>A ∧ B ∨ C</code> teria duas árvores), então usamos uma gramática em níveis de precedência, do mais fraco ao mais forte:</p>
-<pre>bicond  ::= implica ( "↔" implica )*
-implica ::= ou ( "→" implica )?      (associa à direita)
-ou      ::= e ( "∨" e )*
-e       ::= unario ( "∧" unario )*
-unario  ::= "¬" unario | VARIAVEL | "(" bicond ")"</pre>
+<p>Se os símbolos não tiverem uma ordem de prioridade, o computador não sabe como ler <code>A ∧ B ∨ C</code>: pode ser <code>(A ∧ B) ∨ C</code> ou <code>A ∧ (B ∨ C)</code>, e cada leitura dá um resultado diferente. Isso se chama <strong>ambiguidade</strong>. Para resolver, damos uma prioridade a cada símbolo, como na matemática, em que a multiplicação é feita antes da soma. Na gramática abaixo, cada linha é um nível de prioridade, do que "prende" menos (<code>↔</code>) ao que "prende" mais (<code>¬</code> e os parênteses):</p>
+<pre>
+bicondicional ::= implicação ( "↔" implicação )*      nível 1 · mais fraco
+implicação    ::= disjunção ( "→" implicação )?       nível 2 · associa à direita
+disjunção     ::= conjunção ( "∨" conjunção )*        nível 3
+conjunção     ::= negação ( "∧" negação )*            nível 4
+negação       ::= "¬" negação | átomo                 nível 5
+átomo         ::= VARIÁVEL | "(" bicondicional ")"    nível 6 · mais forte</pre>
 <p>Cada nó da árvore sintática é um objeto com o tipo do conectivo e os filhos. A regra R7, <code>F ∧ H → T</code>, fica assim:</p>
 <div class="arv">
 <pre id="ast"></pre>
