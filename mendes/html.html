@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pizzaiolo Lógico: montando pizzas com SAT</title>
+<style>
+:root{--bg:#fffdf7;--fg:#241c18;--mu:#6b6258;--card:#fff;--ln:#e6dccb;--ac:#c8102e;--as:#fdecea;--gr:#1f5a3a;--gs:#e3f2e8;--bd:#b3261e;--bs:#fbe3df;--cd:#f4eee2;--gh:rgba(200,16,46,.28)}
+@media(prefers-color-scheme:dark){:root{--bg:#10201a;--fg:#f1ebdd;--mu:#a9b3a6;--card:#183027;--ln:#2f4a3e;--ac:#ff6b7f;--as:#3a2328;--gr:#6fd08f;--gs:#173a27;--bd:#ff8a7d;--bs:#3a1d1a;--cd:#1f3a2f;--gh:rgba(255,107,127,.22)}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif}
+h1,h2,h3,summary,th{font-family:Rockwell,"Roboto Slab","Rockwell Extra Bold",Georgia,serif}
+.w{max-width:900px;margin:0 auto;padding:0 16px}
+header{background-color:var(--card);background-image:linear-gradient(90deg,var(--gh) 50%,transparent 50%),linear-gradient(var(--gh) 50%,transparent 50%);background-size:34px 34px;border-bottom:4px solid var(--ac);padding:34px 0 40px}
+.placa{background:var(--card);border:3px solid var(--ac);border-radius:6px;padding:20px 24px;max-width:660px;box-shadow:6px 6px 0 var(--ac)}
+.placa small{color:var(--mu)}.placa h1{font-size:clamp(1.8rem,5vw,2.6rem);line-height:1.1;margin:.25em 0 .3em}.placa p{margin:.3em 0}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--ln)}
+nav .w{display:flex;gap:6px;overflow-x:auto;padding:8px 16px}nav a{white-space:nowrap;text-decoration:none;color:var(--fg);font-size:.86rem;padding:4px 12px;border:1px solid var(--ln);border-radius:999px;background:var(--card)}nav a:hover{border-color:var(--ac);color:var(--ac)}
+section{padding:26px 0 4px;scroll-margin-top:50px}
+h2{font-size:1.5rem;margin:0 0 .5em;padding-bottom:.2em;border-bottom:3px dotted var(--ac)}h3{font-size:1.08rem;margin:1.3em 0 .3em}
+code,pre,.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.88em}code{background:var(--cd);border:1px solid var(--ln);padding:0 5px;border-radius:4px}
+pre{background:var(--cd);border:1px solid var(--ln);padding:12px;border-radius:6px;overflow-x:auto;line-height:1.45}
+.tw{overflow-x:auto;border:2px dashed var(--ln);border-radius:6px;background:var(--card);margin:10px 0}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{padding:7px 11px;border-bottom:1px dotted var(--ln);text-align:left;vertical-align:top}th{background:var(--as);font-size:.9rem}tr:last-child td{border:0}
+.f{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--cd);border-left:5px solid var(--ac);padding:10px 14px;overflow-x:auto;white-space:nowrap}
+.co{border:2px dashed var(--ac);background:var(--as);padding:10px 14px;border-radius:6px;margin:12px 0}
+.ok{color:var(--gr);font-weight:700}.bad{color:var(--bd);font-weight:700}.mu{color:var(--mu)}
+button{font:inherit;font-size:.92rem;cursor:pointer;border-radius:6px;border:2px solid var(--ln);background:var(--card);color:var(--fg);padding:6px 12px}
+button:hover{border-color:var(--ac)}button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
+button.p{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:700}button:disabled{opacity:.45;cursor:not-allowed}
+input{font:inherit;font-family:ui-monospace,Menlo,monospace;width:100%;padding:9px 11px;border-radius:6px;border:2px solid var(--ln);background:var(--card);color:var(--fg)}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.card{background:var(--card);border:2px dashed var(--ac);border-radius:6px;padding:14px 16px;margin:12px 0}
+details{background:var(--card);border:1px solid var(--ln);border-radius:6px;padding:8px 12px;margin:8px 0}summary{cursor:pointer;font-weight:700}
+dl{margin:8px 0}dt{font-weight:700;margin-top:.7em;font-family:Rockwell,Georgia,serif}dd{margin:0}
+.tr{list-style:none;padding:0;margin:0;font-family:ui-monospace,Menlo,monospace;font-size:.85rem}.tr .unit{color:var(--gr)}.tr .dec{color:var(--ac)}.tr .conflito{color:var(--bd);font-weight:700}.tr .back{color:var(--mu)}.tr .sat{color:var(--gr);font-weight:700}
+.mesa{display:grid;grid-template-columns:minmax(220px,320px) 1fr;gap:18px;align-items:center;margin:10px 0}
+@media(max-width:640px){.mesa{grid-template-columns:1fr}}
+.pizza{max-width:320px;margin:0 auto;filter:drop-shadow(0 8px 10px rgba(0,0,0,.28))}
+.pizza svg{width:100%;height:auto;display:block}
+.pizza.ok{animation:pulo .6s}.pizza.shake{animation:shake .45s}
+@keyframes pulo{30%{transform:translateY(-14px) scale(1.04)}60%{transform:translateY(0) scale(.98)}100%{transform:none}}
+@keyframes shake{20%,60%{transform:translateX(-9px) rotate(-2deg)}40%,80%{transform:translateX(9px) rotate(2deg)}100%{transform:none}}
+.pc{opacity:0;transform:translateY(-46px) scale(1.5);transform-box:fill-box;transform-origin:center;transition:opacity .25s,transform .4s cubic-bezier(.3,1.5,.5,1);transition-delay:var(--d,0ms)}
+.ig.on .pc{opacity:1;transform:none}
+.tray{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.ing{display:flex;align-items:center;gap:10px;text-align:left;padding:10px 12px;border-radius:10px}
+.ing .em{font-size:1.7rem;line-height:1}.ing small{display:block;color:var(--mu)}
+.ing.on{border-color:var(--ac);background:var(--as);font-weight:700}
+.rg{list-style:none;padding:0;margin:6px 0}.rg li{padding:6px 10px;border-radius:8px;margin:4px 0;background:var(--bs)}.rg li.s{background:var(--gs)}
+.pl{display:flex;justify-content:space-between;background:#22201c;color:#fff;border-radius:10px;padding:8px 14px;font-family:system-ui,sans-serif}.pl b{color:#ffd166;font-size:1.3rem}
+.fb{margin-top:10px;padding:11px 14px;border-radius:8px;background:var(--as)}.fb.g{background:var(--gs)}.fb.r{background:var(--bs)}
+footer{padding:26px 0 44px;color:var(--mu);font-size:.9rem}
+.arv{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:center;margin:10px 0}
+@media(max-width:640px){.arv{grid-template-columns:1fr}}
+.arv pre{margin:0}
+.arv figure{margin:0;background:var(--card);border:2px dashed var(--ln);border-radius:6px;padding:8px}
+.arv svg{width:100%;height:auto;display:block}
+.arv .ln{stroke:var(--mu);stroke-width:2}
+.arv .op{fill:var(--as);stroke:var(--ac);stroke-width:2.5}
+.arv .vr{fill:var(--gs);stroke:var(--gr);stroke-width:2.5}
+.arv text{fill:var(--fg);font:700 18px ui-monospace,Menlo,Consolas,monospace;text-anchor:middle;dominant-baseline:central}
+.tree{overflow-x:auto;background:var(--card);border:2px dashed var(--ln);border-radius:6px;margin:10px 0;padding:8px}
+.tree svg{display:block;margin:0 auto;height:auto;max-width:none}
+.tree .ln{stroke:var(--mu);stroke-width:1.6}
+.tree .op{fill:var(--as);stroke:var(--ac);stroke-width:2}
+.tree .vr{fill:var(--gs);stroke:var(--gr);stroke-width:2}
+.tree text{fill:var(--fg);font:700 13px ui-monospace,Menlo,Consolas,monospace;text-anchor:middle;dominant-baseline:central}
+.tv{max-height:300px;overflow:auto}.tv th{position:sticky;top:0}.tv tr.m td{background:var(--gs)}
+.pill{display:inline-block;min-width:24px;text-align:center;border-radius:999px;padding:0 6px;font-weight:700;font-size:.8rem}
+.pill.f{background:var(--bs);color:var(--bd)}.pill.v{color:var(--gr)}
+.tr .puro{color:#9b6bd6}
+</style>
+</head>
+<body>
+<header><div class="w"><div class="placa"><small>Lógica para Computação · Engenharia da Computação · [Grupo: Elmar Grossl Junior, João Victor Mendes e Isabel Schifler ]</small>
+<h1>Pizzaiolo Lógico: montando pizzas com SAT</h1>
+<p>Existe uma pizza que respeita todas as regras do cliente e da cozinha? Usamos lógica proposicional, SAT, FNC e DPLL para descobrir.</p></div></div></header>
+<nav aria-label="Seções"><div class="w"><a href="#mapa">Critérios</a><a href="#contexto">1 Contexto</a><a href="#repr">2 Representação</a><a href="#sat">3 SAT</a><a href="#fnc">4 FNC</a><a href="#lab">5 Laboratório</a><a href="#jogo">6 Jogo</a><a href="#testes">7 Testes</a><a href="#codigo">8 Código</a><a href="#roteiro">9 Roteiro</a><a href="#gloss">10 Glossário</a></div></nav>
+<main class="w">
+
+<section id="mapa"><h2>Mapa dos critérios</h2>
+<p>Cada linha mostra onde o critério da atividade é atendido nesta página e o que fizemos para atendê-lo.</p>
+<div class="tw"><table><thead><tr><th>Critério</th><th>Onde está atendido</th><th>Passo seguido nesta entrega</th></tr></thead><tbody>
+<tr><td>C1 · Representação computacional</td><td><a href="#repr">Seção 2</a>: gramática, precedência, árvore sintática, notação prefixa, DAG, custo da avaliação</td><td>Desenhamos a árvore sintática da regra R7 (F ∧ H → T), mostramos o objeto que a representa no código e a escrevemos em notação prefixa. O laboratório desenha a árvore de qualquer fórmula e conta nós, altura e nós do DAG.</td></tr>
+<tr><td>C2 · Satisfatibilidade e busca de modelos</td><td><a href="#sat">Seção 3</a>: definições, força bruta, NP-completude, DPLL à mão e no programa</td><td>Rodamos força bruta e DPLL em Φ e na variante do cliente sem lactose (Φ ∧ ¬Q) e fizemos o DPLL à mão, passo a passo.</td></tr>
+<tr><td>C3 · Forma normal conjuntiva</td><td><a href="#fnc">Seção 4</a>: conversão passo a passo, DIMACS, explosão exponencial, Tseitin</td><td>Convertemos as 7 regras para FNC numa tabela com a conversão de cada uma. O laboratório mostra os 3 passos da conversão, o DIMACS e a transformação de Tseitin, que está implementada.</td></tr>
+<tr><td>C4 · Implementação</td><td><a href="#lab">Seção 5</a> (execução), <a href="#testes">7</a> (testes automáticos) e <a href="#codigo">8</a> (código-fonte)</td><td>Deixamos todo o código rodando na própria página, com laboratório de 6 exemplos e 55 testes automáticos visíveis.</td></tr>
+<tr><td>C5 · Modelagem do problema-contexto</td><td><a href="#contexto">Seção 1</a>: variáveis, restrições em português e em lógica, variante insatisfatível</td><td>Montamos a tabela letra → ingrediente e a tabela regra em português → fórmula, e explicamos por que a variante sem lactose é impossível.</td></tr>
+<tr><td>C6 · Comunicação</td><td><a href="#roteiro">Seção 9</a>: roteiro slide a slide, com o responsável por cada parte; <a href="#jogo">Seção 6</a>: jogo usado na demonstração</td><td>Escrevemos um roteiro slide a slide para caber em 30 minutos e preparamos um cliente do jogo para jogar com a turma.</td></tr>
+<tr><td>C7 · Arguição</td><td><a href="#roteiro">Seção 9</a>: perguntas prováveis e respostas preparadas</td><td>Listamos as perguntas prováveis e escrevemos as respostas.</td></tr>
+<tr><td>Bônus</td><td>Seções <a href="#lab">5</a> e <a href="#jogo">6</a></td><td>Implementamos parser de texto, DPLL com rastro e literal puro, Tseitin, DIMACS e o jogo interativo.</td></tr>
+</tbody></table></div></section>
+
+<section id="contexto"><h2>1 Contexto e modelagem</h2>
+<p>Na pizzaria, o cliente monta a pizza escolhendo ingredientes, e a cozinha impõe regras de combinação. Cada ingrediente é uma <strong>variável proposicional</strong>: verdadeiro = vai na pizza, falso = fica de fora. A pergunta: <em>existe uma combinação que atende a todas as regras? Qual?</em></p>
+<div class="tw"><table><thead><tr><th>Variável</th><th>Ingrediente</th></tr></thead><tbody id="t-var"></tbody></table></div>
+<h3>Restrições: do português para a lógica</h3>
+<div class="tw"><table><thead><tr><th>#</th><th>Em português</th><th>Fórmula</th></tr></thead><tbody id="t-reg"></tbody></table></div>
+<p>O problema completo é a conjunção das sete regras:</p>
+<div class="f">Φ = Q ∧ (C ∨ F) ∧ ¬(C ∧ F) ∧ (C → O) ∧ (F → ¬O) ∧ (T ∨ H) ∧ (F ∧ H → T)</div>
+<p>Uma pizza válida é um <strong>modelo</strong> de Φ. O código desta página (seção 8) testa as 64 combinações de 6 ingredientes por força bruta e encontra <strong id="n-mod">…</strong> pizzas válidas. Exemplo: <span class="mono" id="ex-mod"></span>.</p>
+<h3>Variante insatisfatível: cliente intolerante à lactose</h3>
+<p>Acrescentamos <code>¬Q</code> (sem queijo). Então R1 (precisa de queijo) não pode ser satisfeita: <code>Φ ∧ ¬Q</code> é <strong>insatisfatível</strong>. Resultado do DPLL agora: <span id="r-dpll"></span>.</p>
+</section>
+
+<section id="repr"><h2>2 Representação computacional</h2>
+<p>Se os símbolos não tiverem uma ordem de prioridade, o computador não sabe como ler <code>A ∧ B ∨ C</code>: pode ser <code>(A ∧ B) ∨ C</code> ou <code>A ∧ (B ∨ C)</code>, e cada leitura dá um resultado diferente. Isso se chama <strong>ambiguidade</strong>. Para resolver, damos uma prioridade a cada símbolo, como na matemática, em que a multiplicação é feita antes da soma. Na gramática abaixo, cada linha é um nível de prioridade, do que "prende" menos (<code>↔</code>) ao que "prende" mais (<code>¬</code> e os parênteses):</p>
+<p>Cada símbolo tem uma <strong>prioridade</strong>. Do mais fraco ao mais forte:</p>
+<ol>
+<li><code>↔</code> (o mais fraco, fica mais perto da raiz da árvore)</li>
+<li><code>→</code></li>
+<li><code>∨</code></li>
+<li><code>∧</code></li>
+<li><code>¬</code> e os parênteses (os mais fortes, são resolvidos primeiro)</li>
+</ol>
+<p>Exemplo: <code>¬A ∧ B → C</code> é lido como <code>((¬A) ∧ B) → C</code>. Primeiro o ¬, depois o ∧, por último o →. Para mudar a ordem, usamos parênteses.</p>
+<details><summary>Ver a gramática formal (BNF)</summary>
+<pre>
+bicondicional ::= implicação ( "↔" implicação )*
+implicação    ::= disjunção ( "→" implicação )?
+disjunção     ::= conjunção ( "∨" conjunção )*
+conjunção     ::= negação ( "∧" negação )*
+negação       ::= "¬" negação | VARIÁVEL | "(" bicondicional ")"</pre>
+<p class="mu">Cada linha é feita da linha de baixo, então a de baixo é resolvida primeiro. Dentro de parênteses, a leitura volta à primeira linha.</p>
+</details>
+<p>Cada nó da árvore sintática é um objeto com o tipo do conectivo e os filhos. A regra R7, <code>F ∧ H → T</code>, fica assim:</p>
+<div class="arv">
+<pre id="ast"></pre>
+<figure>
+<svg viewBox="0 0 300 210" role="img" aria-label="Árvore de F e H implica T: a raiz é a implicação, com filho esquerdo a conjunção de F e H, e filho direito T">
+  <line class="ln" x1="150" y1="35" x2="85" y2="105"/>
+  <line class="ln" x1="150" y1="35" x2="215" y2="105"/>
+  <line class="ln" x1="85" y1="105" x2="50" y2="175"/>
+  <line class="ln" x1="85" y1="105" x2="120" y2="175"/>
+  <circle class="op" cx="150" cy="35" r="22"/><text x="150" y="35">→</text>
+  <circle class="op" cx="85" cy="105" r="22"/><text x="85" y="105">∧</text>
+  <circle class="vr" cx="215" cy="105" r="22"/><text x="215" y="105">T</text>
+  <circle class="vr" cx="50" cy="175" r="22"/><text x="50" y="175">F</text>
+  <circle class="vr" cx="120" cy="175" r="22"/><text x="120" y="175">H</text>
+</svg>
+</figure>
+</div>
+<p><strong>Por que a árvore tem essa forma?</strong> Na gramática, o ∧ é mais forte que o →, então ele junta F e H primeiro, e só depois o → liga o resultado a T. Por isso <code>F ∧ H → T</code> é lido como <code>(F ∧ H) → T</code>: a raiz é o → (o conectivo mais fraco) e o ∧ fica abaixo dele. Regra prática: quanto mais fraco o conectivo, mais perto da raiz. No código, a função <code>implica</code> pede o lado esquerdo à função <code>ou</code>, que chama <code>e</code>, então o ∧ é resolvido antes de o → ser considerado. Se o → fosse mais forte, a leitura seria <code>F ∧ (H → T)</code>, com outro significado: sem frango (F = F) ela daria sempre falso, quando a regra R7 deveria permitir a pizza.</p>
+<p class="mu">Repare que o parêntese não aparece na árvore: a própria estrutura guarda o agrupamento. Na impressão, o programa só coloca parênteses quando a precedência exige.</p>
+<p>Em notação prefixa (sem parênteses): <code id="pref"></code>. Subfórmulas iguais podem ser compartilhadas num <strong>DAG</strong>;a variável <code>F</code> aparece 4 vezes em Φ, mas seria um único nó. Avaliar é um percurso pós-ordem, com custo <strong>O(n)</strong>: verificar um modelo é fácil, mesmo quando achá-lo é difícil.</p>
+</section>
+
+<section id="sat"><h2>3 Satisfatibilidade e busca de modelos</h2>
+<ul><li><strong>Valoração</strong>: V/F para cada variável. <strong>Modelo</strong>: valoração que torna a fórmula verdadeira.</li>
+<li><strong>Satisfatível</strong>: tem modelo. <strong>Insatisfatível</strong>: não tem. <strong>Válida</strong>: toda valoração é modelo.</li>
+<li>φ é válida ⇔ ¬φ é insatisfatível.</li></ul>
+<p><strong>Força bruta:</strong> testa as 2<sup>n</sup> linhas da tabela-verdade, custo 2<sup>n</sup>·O(tamanho). Com 6 ingredientes são 64 linhas; com 60 seriam mais de 10<sup>18</sup>. SAT é <strong>NP-completo</strong> (Cook, 1971): verificar é O(n), mas não se conhece algoritmo polinomial para achar. Na prática, os resolvedores modernos usam poda.</p>
+<p><strong>DPLL</strong> (1962) combina <em>propagação unitária</em> (cláusula com um literal força o valor), <em>decisão</em> (chute) e <em>retrocesso</em> (se der cláusula vazia, volta e tenta o outro valor).</p>
+<h3>DPLL à mão: cliente intolerante à lactose</h3>
+<div class="tw"><table><thead><tr><th>Passo</th><th>Ação</th><th>Motivo</th></tr></thead><tbody>
+<tr><td>1</td><td>Q = V</td><td>cláusula unitária (R1: Q)</td></tr>
+<tr><td>2</td><td class="bad">conflito</td><td>(¬Q) virou a cláusula vazia □</td></tr></tbody></table></div>
+<p>Nenhuma decisão foi tomada, então não há retrocesso: é INSAT. A força bruta testaria até 64 linhas. Resultado da força bruta em Φ agora: <span id="r-fb"></span>.</p>
+</section>
+
+<section id="fnc"><h2>4 Forma normal conjuntiva</h2>
+<p><strong>Literal</strong>: variável ou sua negação. <strong>Cláusula</strong>: disjunção de literais. <strong>FNC</strong>: conjunção de cláusulas. Algoritmo: (1) eliminar → e ↔ (<code>α→β ≡ ¬α∨β</code>; <code>α↔β ≡ (¬α∨β)∧(¬β∨α)</code>); (2) empurrar ¬ até as variáveis com De Morgan e dupla negação; (3) distribuir ∨ sobre ∧; (4) remover repetições e cláusulas tautológicas.</p>
+<div class="tw"><table><thead><tr><th>#</th><th>Original</th><th>Passos</th><th>Cláusulas</th></tr></thead><tbody id="t-fnc"></tbody></table></div>
+<p>São <strong id="n-cl"></strong> cláusulas. Em <strong>DIMACS</strong> (variáveis em ordem alfabética, menos = negação, 0 encerra a cláusula):</p>
+<pre id="dimacs"></pre>
+<p><strong>Explosão exponencial:</strong> <code>(X1∧Y1) ∨ … ∨ (Xn∧Yn)</code> tem tamanho linear, mas a FNC tem 2<sup>n</sup> cláusulas (teste no laboratório). <strong>Tseitin</strong> resolve criando uma variável τ por subfórmula (ex.: <code>τ ↔ (a∧b)</code> gera <code>(¬τ∨a)(¬τ∨b)(τ∨¬a∨¬b)</code>). O resultado é <em>equisatisfatível</em> e de tamanho linear. Nesta entrega, Tseitin está explicado, mas não implementado.</p>
+</section>
+
+<section id="lab"><h2>5 Laboratório interativo</h2>
+<p>Todo o código desta página roda no seu navegador. Digite uma fórmula (use <code>~ &amp; | -&gt; &lt;-&gt;</code> ou <code>¬ ∧ ∨ → ↔</code>) ou escolha um exemplo. Cada botão preenche a caixa e refaz toda a análise abaixo: representação, tabela-verdade, FNC, Tseitin e DPLL.</p>
+<div class="card"><div class="row" id="ex"></div><p class="mu" id="obs"></p><div class="row"><input id="in" aria-label="Fórmula"><button class="p" id="go">Analisar</button></div><div id="er" class="bad"></div></div>
+<p class="mu">Nenhuma das nossas regras usa ↔, então a dupla negação não aparece aqui. Para ver o ↔ sendo eliminado e a dupla negação em ação, use o botão "Contrapositiva" no laboratório (seção 5).</p>
+<div id="out"></div>
+</section>
+
+<section id="jogo"><h2>6 Jogo: Pizzaiolo Lógico 🍕</h2>
+<p>Cada rodada é um cliente. <strong>Clique nos ingredientes</strong> para pôr na pizza (V) ou tirar (F) até todas as regras ficarem verdes, e então <strong>sirva</strong>. Alguns pedidos são impossíveis: aí o ponto vem de <strong>declarar INSAT</strong>. Você tem 2 dicas do DPLL.</p>
+<div class="card"><div class="pl"><span>Cozinha <b id="pn">0</b></span><span id="pi"></span><span><b id="pe">0</b> Cliente</span></div>
+<h3 id="pt"></h3><div class="mu" id="pd"></div>
+<div class="mesa"><div class="pizza" id="pizza"><svg id="pz" viewBox="0 0 300 300" role="img"></svg></div>
+<div><div class="tray" id="tray"></div><ul class="rg" id="rg"></ul></div></div>
+<div class="row"><button class="p" id="b-serv">🍕 Servir esta pizza</button><button id="b-ins">🚫 Declarar INSAT</button><button id="b-dica">💡 Dica DPLL</button><button id="b-prox" hidden>Próximo cliente →</button><button id="b-re" hidden>↺ Jogar de novo</button></div>
+<div class="fb" id="fb"></div><div id="dica"></div></div>
+</section>
+
+
+<section id="testes"><h2>7 Testes automáticos</h2>
+<p>Rodam ao abrir a página: parser, força bruta × DPLL e equivalência da FNC com a fórmula original em todas as linhas da tabela-verdade.</p>
+<div class="co" id="t-res"></div><div class="tw" style="max-height:280px;overflow:auto"><table><tbody id="t-lin"></tbody></table></div>
+</section>
+
+<section id="codigo"><h2>8 Código-fonte</h2>
+<p>O núcleo lógico (tokenização, parser, avaliação, força bruta, FNC, DPLL, DIMACS) é o script abaixo, lido do próprio elemento <code>&lt;script&gt;</code>.</p>
+<details><summary>Mostrar o código</summary><pre id="src" style="max-height:480px;overflow:auto"></pre></details>
+</section>
+
+<section id="roteiro"><h2>9 Roteiro da apresentação (30 min)</h2>
+<div class="tw"><table><thead><tr><th>Slide</th><th>Conteúdo</th><th>Quem</th></tr></thead><tbody>
+<tr><td>1–2</td><td>Pergunta, variáveis e as 7 restrições</td><td>Isabel</td></tr>
+<tr><td>3–4</td><td>Gramática, precedência, árvore de R7, prefixa, DAG, O(n)</td><td>Elmar</td></tr>
+<tr><td>5–7</td><td>SAT, força bruta, NP-completude, DPLL à mão (lactose)</td><td>Elmar, Isabel e Mendes</td></tr>
+<tr><td>8–9</td><td>FNC, DIMACS, explosão e Tseitin</td><td>Mendes</td></tr>
+<tr><td>10</td><td>Demonstração: laboratório e um cliente do jogo com a turma</td><td>Elmar</td></tr>
+<tr><td>11</td><td>Conclusões e limitações</td><td>Mendes</td></tr></tbody></table></div>
+
+<h3>Perguntas prováveis</h3>
+
+<details><summary>Se o DPLL também precisa chutar, por que ele é melhor que a força bruta?</summary><p>Porque ele poda a busca. A força bruta testa as linhas uma a uma, mesmo quando o começo da combinação já é impossível. O DPLL primeiro aproveita o que é obrigatório (propagação unitária e literal puro) e só chuta quando não sobra alternativa. Se um chute dá conflito, ele descarta de uma vez todas as combinações daquele ramo. No cliente sem lactose, a força bruta testaria até 64 linhas, e o DPLL conclui INSAT sem nenhuma decisão. No pior caso, porém, continua exponencial, e é por isso que SAT é NP-completo.</p></details>
+<details><summary>Por que usar Tseitin se a distribuição já converte para FNC?</summary><p>Porque a distribuição pode explodir: <code>(X1∧Y1) ∨ … ∨ (Xn∧Yn)</code> é pequena, mas a FNC dela tem 2<sup>n</sup> cláusulas. No botão "Explosão da FNC" do laboratório, com n = 6, são 64 cláusulas por distribuição contra 34 por Tseitin, e a diferença só cresce com n. O preço é que o Tseitin cria variáveis novas, então a fórmula não é equivalente, e sim <em>equisatisfatível</em>: ela tem modelo exatamente quando a original tem, e todo modelo dela, olhando só as variáveis originais, é modelo da original.</p></details>
+<details><summary>E se a pizzaria tivesse 1000 ingredientes, o programa aguentaria?</summary><p>A força bruta não: seriam 2<sup>1000</sup> linhas. O nosso DPLL ajuda por podar, mas é simples: não aprende cláusulas e escolhe a variável do chute sem heurística, então também não aguentaria bem. Por isso o laboratório limita a tabela-verdade a 20 variáveis e a distribuição a 2000 cláusulas. Resolvedores de verdade usam CDCL e boas heurísticas e resolvem problemas industriais com milhões de variáveis, mas sem garantia de tempo no pior caso: ninguém sabe se P = NP.</p></details>
+<details><summary>Como sabem que a FNC está certa?</summary><p>Os testes comparam a tabela-verdade da original com a da FNC em todas as valorações.</p></details>
+<strong>Uso de IA:</strong> Foi utlizado Claude para auxilio da dinãmica das Pizzas e para revisão do código. </p>
+</section>
+
+
+<section id="gloss"><h2>10 Glossário</h2><details><summary>Abrir glossário</summary><dl><dt>Cláusula</dt><dd>“Ou” de literais, como (¬C ∨ R).</dd><dt>Cláusula vazia (□)</dt><dd>Cláusula sem literais: nunca é verdadeira e indica conflito.</dd><dt>DIMACS</dt><dd>Formato de texto padrão para entregar uma FNC a um resolvedor SAT.</dd><dt>DPLL</dt><dd>Algoritmo de busca de modelos: propaga o que é obrigatório e chuta com retrocesso.</dd><dt>Equisatisfatível</dt><dd>Duas fórmulas são equisatisfatíveis quando uma tem modelo se, e só se, a outra tem.</dd><dt>FNC</dt><dd>Fórmula escrita como “e” de cláusulas.</dd><dt>Literal</dt><dd>Uma variável ou a negação dela.</dd><dt>Modelo</dt><dd>Valoração que torna a fórmula verdadeira. Aqui, uma pizza que respeita todas as regras.</dd><dt>NP-completo</dt><dd>Os problemas mais difíceis da classe NP; SAT foi o primeiro provado assim.</dd><dt>Propagação unitária</dt><dd>Cláusula com um só literal livre obriga esse literal.</dd><dt>Retrocesso</dt><dd>Voltar atrás e tentar a outra opção depois de um conflito.</dd><dt>Tseitin</dt><dd>Conversão para FNC que cria variáveis novas e mantém o tamanho linear.</dd><dt>Valoração</dt><dd>Atribuir V ou F a todas as variáveis.</dd></dl></details></section>
+</main>
+<footer><div class="w">Lógica para Computação · Engenharia da Computação · 5ª fase</div></footer>
+
+<script id="nucleo">
+const L = (() => {
+  // =========================================================================
+  // 1. O TRADUTOR (TOKENIZER E PARSER)
+  // Transforma o texto digitado (ex: "A -> B") em uma árvore que o PC entende
+  // =========================================================================
+
+  const tok = (s) => {
+    const t = [];
+    let i = 0;
+    while (i < s.length) {
+      const c = s[i];
+      if (/\s/.test(c)) { i++; continue; }
+      const m = [['<->', 'iff'], ['<=>', 'iff'], ['->', 'imp'], ['=>', 'imp'], ['↔', 'iff'], ['→', 'imp']].find(([x]) => s.startsWith(x, i));
+      if (m) { t.push({ k: m[1] }); i += m[0].length; continue; }
+      if ('¬~!'.includes(c)) { t.push({ k: 'not' }); i++; continue; }
+      if ('∧&'.includes(c)) { t.push({ k: 'and' }); i++; continue; }
+      if ('∨|'.includes(c)) { t.push({ k: 'or' }); i++; continue; }
+      if (c === '(' || c === ')') { t.push({ k: c }); i++; continue; }
+      if (/[A-Za-z_]/.test(c)) {
+        let j = i;
+        while (j < s.length && /\w/.test(s[j])) j++;
+        t.push({ k: 'var', n: s.slice(i, j) });
+        i = j;
+        continue;
+      }
+      throw Error('Símbolo inesperado "' + c + '"');
+    }
+    return t;
+  };
+
+  const parse = (s) => {
+    const t = tok(s);
+    let p = 0;
+    const k = () => p < t.length ? t[p].k : 'fim';
+
+    const bicondicional = () => { let x = implica(); while (k() === 'iff') { p++; x = { t: 'iff', a: x, b: implica() }; } return x; };
+    const implica = () => { const x = ou(); if (k() === 'imp') { p++; return { t: 'imp', a: x, b: implica() }; } return x; };
+    const ou = () => { let x = e(); while (k() === 'or') { p++; x = { t: 'or', a: x, b: e() }; } return x; };
+    const e = () => { let x = nega(); while (k() === 'and') { p++; x = { t: 'and', a: x, b: nega() }; } return x; };
+    const nega = () => {
+      if (k() === 'not') { p++; return { t: 'not', a: nega() }; }
+      if (k() === 'var') return { t: 'var', n: t[p++].n };
+      if (k() === '(') {
+        p++;
+        const x = bicondicional();
+        if (k() !== ')') throw Error('Faltou ")"');
+        p++;
+        return x;
+      }
+      throw Error('Esperava variável ou "("');
+    };
+
+    if (!t.length) throw Error('Fórmula vazia');
+    const x = bicondicional();
+    if (p < t.length) throw Error('Sobrou texto no fim da fórmula');
+    return x;
+  };
+
+  const P = { iff: 1, imp: 2, or: 3, and: 4, not: 5, var: 6 };
+  const S = { iff: '↔', imp: '→', or: '∨', and: '∧' };
+
+  const str = (f) => {
+    if (f.t === 'var') return f.n;
+    if (f.t === 'not') return '¬' + (P[f.a.t] < 5 ? '(' + str(f.a) + ')' : str(f.a));
+    const p = P[f.t], pa = P[f.a.t], pb = P[f.b.t], l = str(f.a), r = str(f.b);
+    return ((pa < p || (pa === p && f.t === 'imp')) ? '(' + l + ')' : l) + ' ' + S[f.t] + ' ' + ((pb < p || (pb === p && f.t === 'iff')) ? '(' + r + ')' : r);
+  };
+
+  const pref = (f) => f.t === 'var' ? f.n : f.t === 'not' ? '¬ ' + pref(f.a) : S[f.t] + ' ' + pref(f.a) + ' ' + pref(f.b);
+
+  // =========================================================================
+  // 2. TESTADOR (FORÇA BRUTA E TABELA VERDADE)
+  // =========================================================================
+
+  const ev = (f, v) => {
+    switch (f.t) {
+      case 'var': return !!v[f.n];
+      case 'not': return !ev(f.a, v);
+      case 'and': return ev(f.a, v) && ev(f.b, v);
+      case 'or': return ev(f.a, v) || ev(f.b, v);
+      case 'imp': return !ev(f.a, v) || ev(f.b, v);
+      case 'iff': return ev(f.a, v) === ev(f.b, v);
+    }
+  };
+
+  const vars = (f) => {
+    const s = new Set();
+    (function r(g) {
+      if (g.t === 'var') s.add(g.n);
+      else { r(g.a); if (g.b) r(g.b); }
+    })(f);
+    return [...s].sort();
+  };
+
+  const linha = (vs, i) => Object.fromEntries(vs.map((x, k) => [x, ((i >> (vs.length - 1 - k)) & 1) === 0]));
+
+  const tabela = (f) => {
+    const vs = vars(f), n = 2 ** vs.length;
+    if (vs.length > 20) throw Error('Variáveis demais para a tabela-verdade');
+    let m = 0, prim = null;
+    const rows = [];
+    for (let i = 0; i < n; i++) {
+      const v = linha(vs, i), r = ev(f, v);
+      if (r) { m++; prim = prim || v; }
+      if (rows.length < 128) rows.push([v, r]);
+    }
+    return { vs, n, m, prim, rows, cls: m === n ? 'válida (tautologia)' : m === 0 ? 'insatisfatível (contradição)' : 'satisfatível (contingente)' };
+  };
+
+  const forca = (f) => {
+    const vs = vars(f);
+    for (let i = 0; i < 2 ** vs.length; i++) {
+      const v = linha(vs, i);
+      if (ev(f, v)) return { sat: true, i: i + 1 };
+    }
+    return { sat: false, i: 2 ** vs.length };
+  };
+
+  // =========================================================================
+  // 3. ORGANIZADOR FNC (FORMA NORMAL CONJUNTIVA)
+  // Simplifica as fórmulas para o algoritmo inteligente poder trabalhar
+  // =========================================================================
+
+  const neg = (l) => l[0] === '-' ? l.slice(1) : '-' + l;
+  const vd = (neg2) => neg2[0] === '-' ? neg2.slice(1) : neg2;
+  const dd = (c) => [...new Map(c.map(x => [x.join(','), x])).values()];
+  const norm = (c) => {
+    const s = [...new Set(c)];
+    return s.some(l => s.includes(neg(l))) ? null : s.sort();
+  };
+
+  const nnf = (f, n = false) => {
+    switch (f.t) {
+      case 'var': return n ? { t: 'not', a: f } : f;
+      case 'not': return nnf(f.a, !n);
+      case 'and':
+      case 'or': return { t: n ? (f.t === 'and' ? 'or' : 'and') : f.t, a: nnf(f.a, n), b: nnf(f.b, n) };
+      case 'imp': return nnf({ t: 'or', a: { t: 'not', a: f.a }, b: f.b }, n);
+      case 'iff': return nnf({ t: 'and', a: { t: 'imp', a: f.a, b: f.b }, b: { t: 'imp', a: f.b, b: f.a } }, n);
+    }
+  };
+
+  const dist = (f) => {
+    if (f.t === 'var') return [[f.n]];
+    if (f.t === 'not') return [['-' + f.a.n]];
+    const A = dist(f.a), B = dist(f.b);
+    if (f.t === 'and') return dd([...A, ...B]);
+    if (A.length * B.length > 2000) throw Error('Explosão da FNC: mais de 2000 cláusulas (use Tseitin)');
+    const r = [];
+    for (const x of A) {
+      for (const y of B) {
+        const c = norm([...x, ...y]);
+        if (c) r.push(c);
+      }
+    }
+    return dd(r);
+  };
+
+  const cnf = (f) => {
+    const n = nnf(f);
+    return { nnf: n, cl: dist(n) };
+  };
+
+  const fmtL = (l) => l[0] === '-' ? '¬' + l.slice(1) : l;
+  const fmtC = (c) => c.length ? '(' + c.map(fmtL).join(' ∨ ') + ')' : '□';
+  const sats = (c, v) => c.some(l => l[0] === '-' ? !v[l.slice(1)] : !!v[l]);
+
+  // =========================================================================
+  // 4. O DETETIVE (DPLL)
+  // Tenta resolver o problema usando deduções lógicas
+  // =========================================================================
+
+  const dpll = (cl) => {
+    const tr = [], st = { d: 0, p: 0, c: 0, l: 0 };
+    const simp = (cs, l) => cs.filter(c => !c.includes(l)).map(c => c.filter(x => x !== neg(l)));
+    
+    const rec = (cs, a, n) => {
+      for (;;) {
+        if (cs.some(c => !c.length)) {
+          st.c++;
+          tr.push(['conflito', 'Conflito: surgiu a cláusula vazia □', n]);
+          return null;
+        }
+        if (!cs.length) {
+          tr.push(['sat', 'Todas as cláusulas satisfeitas: modelo encontrado', n]);
+          return a;
+        }
+        const u = cs.find(c => c.length === 1);
+        if (u) {
+          const l = u[0];
+          a = { ...a, [vd(l)]: l[0] !== '-' };
+          st.p++;
+          tr.push(['unit', 'Propagação unitária: ' + vd(l) + ' = ' + (l[0] === '-' ? 'F' : 'V'), n]);
+          cs = simp(cs, l);
+          continue;
+        }
+        const ls = new Set(cs.flat()), pu = [...ls].find(l => !ls.has(neg(l)));
+        if (pu) {
+          a = { ...a, [vd(pu)]: pu[0] !== '-' };
+          st.l++;
+          tr.push(['puro', 'Literal puro: ' + vd(pu) + ' = ' + (pu[0] === '-' ? 'F' : 'V') + ' (' + fmtL(pu) + ' só aparece com esse sinal)', n]);
+          cs = cs.filter(c => !c.includes(pu));
+          continue;
+        }
+        break;
+      }
+      const x = vd(cs[0][0]);
+      for (const v of [true, false]) {
+        st.d++;
+        tr.push(['dec', 'Decisão: ' + x + ' = ' + (v ? 'V' : 'F'), n]);
+        const r = rec(simp(cs, v ? x : '-' + x), { ...a, [x]: v }, n + 1);
+        if (r) return r;
+        tr.push(['back', 'Retrocesso: ' + x + ' = ' + (v ? 'V' : 'F') + ' leva a conflito', n]);
+      }
+      return null;
+    };
+    const m = rec(cl.map(c => [...c]), {}, 0);
+    return { sat: !!m, m, tr, st };
+  };
+
+  const dimacs = (cl) => {
+    const vs = [...new Set(cl.flat().map(vd))].sort(), id = new Map(vs.map((x, i) => [x, i + 1]));
+    return ['c ' + vs.map(x => x + '=' + id.get(x)).join(' '), 'p cnf ' + vs.length + ' ' + cl.length, ...cl.map(c => c.map(l => l[0] === '-' ? -id.get(l.slice(1)) : id.get(l)).join(' ') + ' 0')].join('\n');
+  };
+
+  const tam = (f) => f.t === 'var' ? 1 : 1 + tam(f.a) + (f.b ? tam(f.b) : 0);
+  const alt = (f) => f.t === 'var' ? 1 : 1 + Math.max(alt(f.a), f.b ? alt(f.b) : 0);
+  const chave = (f) => f.t === 'var' ? f.n : f.t + '(' + chave(f.a) + (f.b ? ',' + chave(f.b) : '') + ')';
+  
+  const dag = (f) => {
+    const s = new Set();
+    (function r(g) {
+      s.add(chave(g));
+      if (g.t !== 'var') {
+        r(g.a);
+        if (g.b) r(g.b);
+      }
+    })(f);
+    return s.size;
+  };
+
+  const sem = (f) => {
+    if (f.t === 'var') return f;
+    if (f.t === 'not') return { t: 'not', a: sem(f.a) };
+    const a = sem(f.a), b = sem(f.b);
+    if (f.t === 'imp') return { t: 'or', a: { t: 'not', a }, b };
+    if (f.t === 'iff') return { t: 'and', a: { t: 'or', a: { t: 'not', a }, b }, b: { t: 'or', a: { t: 'not', a: b }, b: a } };
+    return { t: f.t, a, b };
+  };
+
+  const tse = (f) => {
+    let n = 0;
+    const cl = [], N = neg;
+    const g = (x) => {
+      if (x.t === 'var') return x.n;
+      const id = 'τ' + (++n), a = g(x.a), b = x.b ? g(x.b) : null;
+      if (x.t === 'not') cl.push([N(id), N(a)], [id, a]);
+      else if (x.t === 'and') cl.push([N(id), a], [N(id), b], [id, N(a), N(b)]);
+      else if (x.t === 'or') cl.push([N(id), a, b], [id, N(a)], [id, N(b)]);
+      else if (x.t === 'imp') cl.push([N(id), N(a), b], [id, a], [id, N(b)]);
+      else cl.push([N(id), N(a), b], [N(id), a, N(b)], [id, a, b], [id, N(a), N(b)]);
+      return id;
+    };
+    cl.push([g(f)]);
+    return { cl, aux: n };
+  };
+
+  return { parse, str, pref, ev, vars, linha, tabela, forca, cnf, dpll, dimacs, fmtC, sats, tam, alt, dag, sem, tse };
+})();
+</script>
+
+<script>
+(()=>{
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ING={C:['Calabresa','🌭'],F:['Frango','🍗'],H:['Champignon','🍄'],O:['Cebola','🧅'],Q:['Queijo','🧀'],T:['Tomate','🍅']};
+const R=[['R1','Precisa de queijo.','Q'],['R2','Precisa de carne: calabresa ou frango.','C | F'],
+['R3','Calabresa e frango não combinam.','~(C & F)'],['R4','Calabresa pede cebola.','C -> O'],
+['R5','Frango não leva cebola.','F -> ~O'],['R6','Precisa de um acompanhamento: tomate ou champignon.','T | H'],
+['R7','Frango com champignon pede tomate para equilibrar.','F & H -> T']];
+const PHI=R.map(r=>'('+r[2]+')').join(' & ');
+const vt=v=>Object.keys(v).sort().map(k=>k+'='+(v[k]?'V':'F')).join(', ');
+const tr=d=>'<ul class="tr">'+d.tr.map(e=>`<li class="${e[0]}" style="padding-left:${e[2]*18}px">${esc(e[1])}</li>`).join('')+'</ul>';
+
+// Contexto
+$('#t-var').innerHTML=Object.entries(ING).map(([k,v])=>`<tr><td><code>${k}</code></td><td>${v[0]}</td></tr>`).join('');
+$('#t-reg').innerHTML=R.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td><code>${esc(L.str(L.parse(r[2])))}</code></td></tr>`).join('');
+const phi=L.parse(PHI),tv=L.tabela(phi);
+$('#n-mod').textContent=tv.m;$('#ex-mod').textContent=vt(tv.prim);
+const fb=L.forca(phi);$('#r-fb').innerHTML=`<span class="ok">SAT</span>, primeiro modelo na linha ${fb.i} de ${tv.n}`;
+const dl=L.dpll(L.cnf(L.parse(PHI+' & ~Q')).cl);
+$('#r-dpll').innerHTML=`<span class="bad">INSAT</span>, com ${dl.st.p} propagações e ${dl.st.d} decisões`;
+const r7=L.parse('F & H -> T');
+$('#ast').textContent=JSON.stringify(r7,null,1).replace(/\n\s*/g,' ').replace(/\{ "t"/g,'\n{ "t"');
+$('#pref').textContent=L.pref(r7);
+// FNC
+const cf=L.cnf(phi).cl;
+const PAS=['já é cláusula','já é cláusula','De Morgan','eliminar →','eliminar →','já é cláusula','eliminar →: ¬(F ∧ H) ∨ T; depois De Morgan'];
+$('#t-fnc').innerHTML=R.map((r,i)=>`<tr><td>${r[0]}</td><td><code>${esc(L.str(L.parse(r[2])))}</code></td><td>${PAS[i]}</td><td>${esc(L.cnf(L.parse(r[2])).cl.map(L.fmtC).join(', '))}</td></tr>`).join('');
+$('#n-cl').textContent=cf.length;$('#dimacs').textContent=L.dimacs(cf);
+
+// Laboratório
+const X6=[1,2,3,4,5,6].map(i=>`(X${i} & Y${i})`).join(' | ');
+const EX=[
+['Φ: pizza',PHI,'a fórmula completa: 5 pizzas válidas entre 64 linhas. No rastro do DPLL, veja o que foi forçado e o que foi chute.'],
+['Φ sem lactose',PHI+' & ~Q','Q e ¬Q se chocam já na propagação unitária: INSAT sem nenhuma decisão e nenhuma linha verde na tabela.'],
+['R7','F & H -> T','árvore pequena, 3 variáveis e 8 linhas, 7 delas modelos.'],
+['Contrapositiva','(A -> B) <-> (~B -> ~A)','tautologia: todas as linhas são V e ¬φ é insatisfatível. O passo 1 da FNC elimina o ↔.'],
+['Explosão da FNC',X6,'6 pares ligados por ∨: a distribuição gera 64 cláusulas (2⁶) e o Tseitin só 34.'],
+['Dilema do cliente',PHI+' & (F <-> H) & (T <-> ~F)','"frango se e só se champignon" e "tomate se e só se não há frango": só sobra 1 pizza (1 linha verde).']];
+$('#ex').innerHTML=EX.map((e,i)=>`<button data-i="${i}">${e[0]}</button>`).join('');
+$('#in').value=PHI;$('#obs').textContent='O que observar: '+EX[0][2];
+
+const SIM={and:'∧',or:'∨',imp:'→',iff:'↔',not:'¬'};
+const arvore=f=>{if(L.tam(f)>120)return'<p class="mu">Árvore grande demais para desenhar (mais de 120 nós).</p>';
+let k=0;const N=[],E=[];
+const go=(g,d)=>{const nd={g,d};if(g.t==='var')nd.x=k++;else{const a=go(g.a,d+1),b=g.b&&go(g.b,d+1);nd.x=b?(a.x+b.x)/2:a.x;E.push([nd,a]);if(b)E.push([nd,b])}N.push(nd);return nd};
+go(f,0);
+const W=Math.max(k,1)*38+10,H=L.alt(f)*52+4,X=n=>(n.x*38+24).toFixed(1),Y=n=>n.d*52+24;
+return`<div class="tree"><svg viewBox="0 0 ${W} ${H}" width="${W}" role="img" aria-label="Árvore sintática da fórmula">${E.map(([p,c])=>`<line class="ln" x1="${X(p)}" y1="${Y(p)}" x2="${X(c)}" y2="${Y(c)}"/>`).join('')}${N.map(n=>`<circle class="${n.g.t==='var'?'vr':'op'}" cx="${X(n)}" cy="${Y(n)}" r="16"/><text x="${X(n)}" y="${Y(n)}">${esc(n.g.t==='var'?n.g.n:SIM[n.g.t])}</text>`).join('')}</svg></div>`};
+
+function analisar(){const o=$('#out'),er=$('#er');er.textContent='';o.innerHTML='';let f;
+try{f=L.parse($('#in').value)}catch(e){er.textContent='Erro de sintaxe: '+e.message;return}
+const vs=L.vars(f),t=L.tabela(f),bf=L.forca(f);let h='';
+h+=`<details open><summary>Representação</summary><p><strong>Infixa:</strong> <span class="mono">${esc(L.str(f))}</span><br><strong>Prefixa:</strong> <span class="mono">${esc(L.pref(f))}</span><br><strong>Variáveis:</strong> ${vs.join(', ')} · <strong>Nós na árvore:</strong> ${L.tam(f)} · <strong>Altura:</strong> ${L.alt(f)} · <strong>Subfórmulas distintas (nós do DAG):</strong> ${L.dag(f)}</p>${arvore(f)}</details>`;
+h+=`<details open><summary>Tabela-verdade e força bruta</summary><p><strong>${t.n}</strong> valorações testadas · <strong>${t.m}</strong> modelo(s) · Classificação: <strong>${t.cls}</strong><br>${t.prim?'Primeiro modelo: <span class="mono">'+esc(vt(t.prim))+'</span>':'Nenhum modelo.'}<br>Força bruta: ${bf.sat?'<span class="ok">SAT</span>, primeiro modelo na linha '+bf.i+' de '+t.n:'<span class="bad">INSAT</span> depois de testar as '+t.n+' linhas'}<br>Validade pelo teste de ¬φ: ¬φ é <strong class="${t.m<t.n?'bad':'ok'}">${t.m<t.n?'satisfatível':'insatisfatível'}</strong>, logo φ ${t.m<t.n?'não é':'é'} válida.</p>`;
+if(vs.length<=7)h+=`<div class="tw tv"><table><thead><tr>${vs.map(v=>`<th>${v}</th>`).join('')}<th>φ</th></tr></thead><tbody>${t.rows.map(([v,r])=>`<tr${r?' class="m"':''}>${vs.map(x=>`<td>${v[x]?'V':'F'}</td>`).join('')}<td><span class="pill ${r?'v':'f'}">${r?'V':'F'}</span></td></tr>`).join('')}</tbody></table></div>`;
+else h+=`<p class="mu">Tabela omitida: mais de 7 variáveis (${t.n} linhas).</p>`;
+h+='</details>';let cl=null;
+try{const c=L.cnf(f);cl=c.cl;h+=`<details open><summary>Forma normal conjuntiva (${cl.length} cláusula${cl.length===1?'':'s'})</summary><p><strong>1. Sem → e ↔:</strong><br><span class="mono">${esc(L.str(L.sem(f)))}</span></p><p><strong>2. Forma normal da negação:</strong><br><span class="mono">${esc(L.str(c.nnf))}</span></p><p><strong>3. Distribuição e simplificação (FNC):</strong><br><span class="mono">${esc(cl.map(L.fmtC).join(' ∧ '))}</span></p><p><strong>DIMACS:</strong></p><pre>${esc(L.dimacs(cl))}</pre></details>`}
+catch(e){h+=`<details open><summary>Forma normal conjuntiva</summary><p class="bad">${esc(e.message)}</p></details>`}
+const ts=L.tse(f);
+const cmp=cl?(ts.cl.length<cl.length?`Aqui o Tseitin já gera menos cláusulas que a distribuição (${cl.length}).`:`Para fórmulas pequenas o Tseitin gera mais cláusulas que a distribuição (${cl.length}), mas cresce de forma linear.`):'A distribuição estourou o limite; o Tseitin não tem esse problema.';
+h+=`<details open><summary>Transformação de Tseitin (${ts.cl.length} cláusulas, ${ts.aux} variáveis auxiliares)</summary><p class="mono">${esc(ts.cl.map(L.fmtC).join(' ∧ '))}</p><p class="mu">${cmp}</p></details>`;
+if(cl){const d=L.dpll(cl),m=d.sat?Object.fromEntries(vs.map(x=>[x,!!d.m[x]])):null;
+h+=`<details open><summary>DPLL: ${d.sat?'<span class="ok">SATISFATÍVEL</span>':'<span class="bad">INSATISFATÍVEL</span>'}</summary><p>${d.st.d} decisões · ${d.st.p} propagações unitárias · ${d.st.l} literais puros · ${d.st.c} conflitos</p>${m?`<p>Modelo: <span class="mono">${esc(vt(m))}</span></p>`:''}${tr(d)}</details>`}
+o.innerHTML=h}
+$('#go').onclick=analisar;$('#in').onkeydown=e=>{if(e.key==='Enter')analisar()};
+$('#ex').onclick=e=>{const b=e.target.closest('button');if(b){const x=EX[b.dataset.i];$('#in').value=x[1];$('#obs').textContent='O que observar: '+x[2];analisar()}};
+analisar();
+
+// Jogo
+const all='QTHFOC'.split(''),rs=i=>R[i-1];
+const J=[
+{t:'Cliente 1 · Margherita',a:['Q','T','H'],r:[rs(1),rs(6),['','Quer tomate na pizza.','T']],d:'Três ingredientes, três regras.',l:'Você achou um <strong>modelo</strong>. “Q” (R1) e “T” são <strong>cláusulas unitárias</strong>: forçam Q = V e T = V por propagação. R6 já fica satisfeita, então o champignon é livre.'},
+{t:'Cliente 2 · Pizza da casa',a:all,r:R,d:'As sete regras de Φ, seis ingredientes.',l:'É o Φ da seção 1: das 64 combinações, só 5 são pizzas válidas. Você provavelmente fixou algo, propagou e corrigiu, como o DPLL.'},
+{t:'Cliente 3 · Frango com champignon',a:all,r:[...R,['','Quer frango e champignon.','F & H']],d:'O pedido força duas variáveis.',l:'F = V e H = V forçam T = V (R7). F = V também força C = F (R3) e O = F (R5), e o queijo é obrigatório. Sobra uma única pizza: queijo, frango, champignon e tomate. Tudo saiu por propagação, sem chute.'},
+{t:'Cliente 4 · Intolerante à lactose',a:all,r:[...R,['','Sem queijo.','~Q']],d:'Existe pizza possível?',l:'<strong>Insatisfatível</strong>: “Q” (R1) e “¬Q” são duas cláusulas unitárias opostas. Ao propagar uma, a outra vira a <strong>cláusula vazia</strong> □.'},
+{t:'Cliente 5 · Match point',a:['C','O'],r:[['','Quer calabresa.','C'],['','Sem cebola.','~O'],rs(4)],d:'Dois ingredientes, três regras.',l:'Insatisfatível: C = V e R4 (calabresa pede cebola) forçam O = V, mas o cliente exige sem cebola. <strong>Verificar</strong> uma pizza é fácil (O(n)); <strong>provar</strong> que nenhuma existe é o que torna SAT difícil (P × NP).'}];
+J.forEach(x=>{x.f=x.r.map(y=>L.parse(y[2]));x.cl=L.cnf(x.f.reduce((a,b)=>({t:'and',a,b}))).cl;x.sat=L.dpll(x.cl).sat});
+
+// Desenho da pizza: cada ingrediente é um grupo de peças que aparecem com animação
+const pos=(n,off,Rd)=>Array.from({length:n},(_,i)=>{const r=Rd*Math.sqrt((i+.5)/n),a=i*2.39996+off;return[150+r*Math.cos(a),150+r*Math.sin(a)]});
+const peca=(n,off,Rd,fn)=>pos(n,off,Rd).map((p,i)=>`<g transform="translate(${p[0].toFixed(1)} ${p[1].toFixed(1)}) rotate(${(i*47)%180})">${fn(i)}</g>`).join('');
+function montaPizza(){
+const q=`<circle class="pc" cx="150" cy="150" r="110" fill="#f7d36a"/>`+peca(16,.4,96,i=>`<rect class="pc" style="--d:${i*25}ms" x="-9" y="-2.5" width="18" height="5" rx="2.5" fill="#ffeaa3"/>`);
+const tm=peca(8,.7,90,i=>`<g class="pc" style="--d:${i*40}ms"><circle r="14" fill="#e0382b" stroke="#a3231a" stroke-width="2"/><circle r="8" fill="#f06a55"/><ellipse cx="-3" cy="-2" rx="1.6" ry="2.6" fill="#ffd9a0"/><ellipse cx="3" cy="2" rx="1.6" ry="2.6" fill="#ffd9a0"/></g>`);
+const h=peca(8,1.9,86,i=>`<g class="pc" style="--d:${i*40}ms"><path d="M-12 3 A12 11 0 0 1 12 3 Z" fill="#e9d8bd" stroke="#a88c63" stroke-width="1.6"/><rect x="-4.5" y="3" width="9" height="9" rx="2.5" fill="#f4eadb" stroke="#a88c63" stroke-width="1.6"/></g>`);
+const f=peca(8,1.1,92,i=>`<rect class="pc" style="--d:${i*40}ms" x="-10" y="-7" width="20" height="14" rx="6" fill="#f6e3c3" stroke="#c99a5c" stroke-width="1.6"/>`);
+const o=peca(12,2.3,98,i=>`<g class="pc" style="--d:${i*30}ms"><circle r="10" fill="none" stroke="#eadbf3" stroke-width="3.5"/><circle r="5" fill="none" stroke="#cfa9e0" stroke-width="2"/></g>`);
+const c=peca(7,.2,88,i=>`<g class="pc" style="--d:${i*45}ms"><circle r="17" fill="#b5342e" stroke="#7e1f1c" stroke-width="2"/><circle cx="-6" cy="-5" r="2.2" fill="#e8857a"/><circle cx="5" cy="-7" r="2.2" fill="#e8857a"/><circle cx="3" cy="6" r="2.2" fill="#e8857a"/><circle cx="-7" cy="5" r="2.2" fill="#e8857a"/></g>`);
+$('#pz').innerHTML=`<circle cx="150" cy="150" r="148" fill="#9a6a3a" stroke="#7a5128" stroke-width="3"/><circle cx="150" cy="154" r="134" fill="rgba(0,0,0,.25)"/><circle cx="150" cy="150" r="132" fill="#d99b4a"/><circle cx="150" cy="150" r="120" fill="#f0bd6a"/><circle cx="150" cy="150" r="112" fill="#c63f27"/><g class="ig" id="ig-Q">${q}</g><g class="ig" id="ig-T">${tm}</g><g class="ig" id="ig-H">${h}</g><g class="ig" id="ig-F">${f}</g><g class="ig" id="ig-O">${o}</g><g class="ig" id="ig-C">${c}</g>`}
+montaPizza();
+
+let s;const fbk=(h,c='')=>{const e=$('#fb');e.className='fb '+c;e.innerHTML=h};
+const anima=c=>{const p=$('#pizza');p.classList.remove('ok','shake');void p.getBoundingClientRect();p.classList.add(c)};
+function novo(){s={i:0,n:0,e:0,d:2};ini()}
+function ini(){const x=J[s.i];s.v=Object.fromEntries(x.a.map(a=>[a,false]));s.ok=false;$('#dica').innerHTML='';$('#b-prox').hidden=$('#b-re').hidden=true;$('#pizza').classList.remove('ok','shake');fbk(esc(x.d)+' <span class="mu">Clique nos ingredientes.</span>');draw()}
+const chip=a=>`<button class="ing${s.v[a]?' on':''}" data-a="${a}" aria-pressed="${!!s.v[a]}" ${s.ok?'disabled':''}><span class="em">${ING[a][1]}</span><span>${ING[a][0]}<small>(${a}) ${s.v[a]?'V · na pizza':'F · fora'}</small></span></button>`;
+function draw(){const x=J[s.i];$('#pn').textContent=s.n;$('#pe').textContent=s.e;$('#pi').textContent=`${x.t.split(' · ')[0]} de ${J.length} · ${s.d} dica${s.d===1?'':'s'}`;$('#pt').textContent=x.t;
+$('#pd').textContent=`${x.a.length} ingredientes · ${x.r.length} regras · ${2**x.a.length} pizzas possíveis`;
+$('#tray').innerHTML=x.a.map(chip).join('');
+all.forEach(k=>$('#ig-'+k).classList.toggle('on',!!s.v[k]));
+const on=x.a.filter(a=>s.v[a]).map(a=>ING[a][0].toLowerCase());
+$('#pz').setAttribute('aria-label',on.length?'Pizza com '+on.join(', '):'Pizza só com molho');
+$('#rg').innerHTML=x.r.map((y,k)=>{const o=L.ev(x.f[k],s.v);return`<li class="${o?'s':''}">${o?'✅':'❌'} <code>${esc(L.str(x.f[k]))}</code> <span class="mu">${esc(y[1])}</span></li>`}).join('');
+$('#b-serv').disabled=$('#b-ins').disabled=s.ok;$('#b-dica').disabled=s.ok||!s.d}
+function fim(h){s.ok=true;draw();anima('ok');fbk(h,'g');if(s.i<J.length-1)$('#b-prox').hidden=false;else{fbk(h+`<hr><strong>${s.n>s.e?'🏆 Fim: a cozinha venceu!':s.n===s.e?'🤝 Fim: empate!':'😅 Fim: o cliente levou esta.'}</strong> Placar ${s.n} × ${s.e}.`,'g');$('#b-re').hidden=false}}
+$('#tray').onclick=e=>{const b=e.target.closest('button');if(b&&!s.ok){s.v[b.dataset.a]=!s.v[b.dataset.a];draw()}};
+$('#b-serv').onclick=()=>{const x=J[s.i],q=x.r.filter((y,k)=>!L.ev(x.f[k],s.v));
+if(!q.length){s.n++;fim('🍕 <strong>Ponto!</strong> A pizza satisfaz todas as regras.<br>'+x.l)}
+else{s.e++;draw();anima('shake');fbk('❌ <strong>Ponto do cliente.</strong> Regra violada: <em>'+esc(q[0][1])+'</em>'+(x.sat?'':'<br><span class="mu">Dica: será que existe mesmo alguma pizza possível?</span>'),'r')}};
+$('#b-ins').onclick=()=>{const x=J[s.i];if(!x.sat){s.n++;fim('🚫 <strong>Ponto! Correto: não existe pizza possível.</strong><br>'+x.l)}else{s.e++;draw();anima('shake');fbk('❌ <strong>Ponto do cliente.</strong> Existe pelo menos uma pizza válida. Continue procurando ou peça uma dica.','r')}};
+$('#b-dica').onclick=()=>{if(!s.d)return;s.d--;const x=J[s.i],d=L.dpll(x.cl);$('#dica').innerHTML=`<details open><summary>💡 O DPLL analisa as ${x.cl.length} cláusulas</summary>${tr(d)}<p><strong>Conclusão:</strong> ${d.sat?'existe pizza; reproduza o rastro.':'não existe pizza possível.'}</p></details>`;draw()};
+$('#b-prox').onclick=()=>{s.i++;ini();$('#jogo').scrollIntoView({behavior:'smooth'})};$('#b-re').onclick=novo;novo();
+
+
+// Testes
+
+const T=[],t=(n,f,ok)=>T.push([n,f,ok]);
+['A','A & ~A','A | ~A','A -> B -> C','(A -> B) -> C','~(A & B) <-> (~A | ~B)','(A -> B) <-> (~B -> ~A)',PHI+' & ~Q','(X1 & Y1) | (X2 & Y2) | (X3 & Y3)','(P -> Q) & (Q -> R) & P & ~R'].forEach(c=>{
+const f=L.parse(c),q=L.tabela(f),cl=L.cnf(f).cl;let eq=true;
+for(let i=0;i<q.n;i++){const v=L.linha(q.vs,i);if(L.ev(f,v)!==cl.every(k=>L.sats(k,v)))eq=false}
+t('Parser: impressão é estável',c,L.str(L.parse(L.str(f)))===L.str(f));
+t('Força bruta e DPLL concordam',c,(q.m>0)===L.dpll(cl).sat);
+t('FNC equivalente em todas as linhas',c,eq);
+t('Tseitin equisatisfatível',c,L.dpll(L.tse(f).cl).sat===(q.m>0));
+t('DPLL devolve modelo que satisfaz a fórmula',c,!L.dpll(cl).sat||L.ev(f,Object.fromEntries(q.vs.map(x=>[x,!!L.dpll(cl).m[x]]))))});
+t('Φ tem 7 cláusulas','Φ',cf.length===7);
+t('Lactose: INSAT sem decisões','Φ ∧ ¬Q',!dl.sat&&dl.st.d===0);
+t('→ associa à direita','A -> B -> C',L.parse('A -> B -> C').b.t==='imp');
+t('Explosão: 3 termos geram 8 cláusulas','(X1&Y1)|(X2&Y2)|(X3&Y3)',L.cnf(L.parse('(X1&Y1)|(X2&Y2)|(X3&Y3)')).cl.length===8);
+let er=false;try{L.parse('A & (B | C')}catch(e){er=true}t('Parser rejeita parêntese aberto','A & (B | C',er);
+const ps=T.filter(x=>x[2]).length;
+$('#t-res').innerHTML=`<strong>${ps} de ${T.length} testes passaram</strong> ${ps===T.length?'✅':'❌'}`;
+$('#t-lin').innerHTML=T.map(x=>`<tr><td>${esc(x[0])}</td><td class="mono">${esc(x[1].length>50?x[1].slice(0,47)+'…':x[1])}</td><td>${x[2]?'✅':'❌'}</td></tr>`).join('');
+$('#src').textContent=$('#nucleo').textContent.trim();
+
+})();
+</script>
+</body>
+</html>
