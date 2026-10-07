@@ -105,13 +105,24 @@ footer{padding:26px 0 44px;color:var(--mu);font-size:.9rem}
 
 <section id="repr"><h2>2 Representação computacional</h2>
 <p>Se os símbolos não tiverem uma ordem de prioridade, o computador não sabe como ler <code>A ∧ B ∨ C</code>: pode ser <code>(A ∧ B) ∨ C</code> ou <code>A ∧ (B ∨ C)</code>, e cada leitura dá um resultado diferente. Isso se chama <strong>ambiguidade</strong>. Para resolver, damos uma prioridade a cada símbolo, como na matemática, em que a multiplicação é feita antes da soma. Na gramática abaixo, cada linha é um nível de prioridade, do que "prende" menos (<code>↔</code>) ao que "prende" mais (<code>¬</code> e os parênteses):</p>
+<p>Cada símbolo tem uma <strong>prioridade</strong>. Do mais fraco ao mais forte:</p>
+<ol>
+<li><code>↔</code> (o mais fraco, fica mais perto da raiz da árvore)</li>
+<li><code>→</code></li>
+<li><code>∨</code></li>
+<li><code>∧</code></li>
+<li><code>¬</code> e os parênteses (os mais fortes, são resolvidos primeiro)</li>
+</ol>
+<p>Exemplo: <code>¬A ∧ B → C</code> é lido como <code>((¬A) ∧ B) → C</code>. Primeiro o ¬, depois o ∧, por último o →. Para mudar a ordem, usamos parênteses.</p>
+<details><summary>Ver a gramática formal (BNF)</summary>
 <pre>
-bicondicional ::= implicação ( "↔" implicação )*      nível 1 · mais fraco
-implicação    ::= disjunção ( "→" implicação )?       nível 2 · associa à direita
-disjunção     ::= conjunção ( "∨" conjunção )*        nível 3
-conjunção     ::= negação ( "∧" negação )*            nível 4
-negação       ::= "¬" negação | átomo                 nível 5
-átomo         ::= VARIÁVEL | "(" bicondicional ")"    nível 6 · mais forte</pre>
+bicondicional ::= implicação ( "↔" implicação )*
+implicação    ::= disjunção ( "→" implicação )?
+disjunção     ::= conjunção ( "∨" conjunção )*
+conjunção     ::= negação ( "∧" negação )*
+negação       ::= "¬" negação | VARIÁVEL | "(" bicondicional ")"</pre>
+<p class="mu">Cada linha é feita da linha de baixo, então a de baixo é resolvida primeiro. Dentro de parênteses, a leitura volta à primeira linha.</p>
+</details>
 <p>Cada nó da árvore sintática é um objeto com o tipo do conectivo e os filhos. A regra R7, <code>F ∧ H → T</code>, fica assim:</p>
 <div class="arv">
 <pre id="ast"></pre>
@@ -198,7 +209,7 @@ negação       ::= "¬" negação | átomo                 nível 5
 <details><summary>Por que usar Tseitin se a distribuição já converte para FNC?</summary><p>Porque a distribuição pode explodir: <code>(X1∧Y1) ∨ … ∨ (Xn∧Yn)</code> é pequena, mas a FNC dela tem 2<sup>n</sup> cláusulas. No botão "Explosão da FNC" do laboratório, com n = 6, são 64 cláusulas por distribuição contra 34 por Tseitin, e a diferença só cresce com n. O preço é que o Tseitin cria variáveis novas, então a fórmula não é equivalente, e sim <em>equisatisfatível</em>: ela tem modelo exatamente quando a original tem, e todo modelo dela, olhando só as variáveis originais, é modelo da original.</p></details>
 <details><summary>E se a pizzaria tivesse 1000 ingredientes, o programa aguentaria?</summary><p>A força bruta não: seriam 2<sup>1000</sup> linhas. O nosso DPLL ajuda por podar, mas é simples: não aprende cláusulas e escolhe a variável do chute sem heurística, então também não aguentaria bem. Por isso o laboratório limita a tabela-verdade a 20 variáveis e a distribuição a 2000 cláusulas. Resolvedores de verdade usam CDCL e boas heurísticas e resolvem problemas industriais com milhões de variáveis, mas sem garantia de tempo no pior caso: ninguém sabe se P = NP.</p></details>
 <details><summary>Como sabem que a FNC está certa?</summary><p>Os testes comparam a tabela-verdade da original com a da FNC em todas as valorações.</p></details>
-<p class="mu"><strong>Limitações:</strong> o DPLL não aprende cláusulas (não é CDCL), não usa literal puro e a heurística de decisão é simples. <strong>Uso de IA:</strong> [declarar aqui, conforme exigido na atividade].</p>
+<strong>Uso de IA:</strong> [declarar aqui, conforme exigido na atividade].</p>
 </section>
 
 
@@ -219,15 +230,15 @@ if(c==='('||c===')'){t.push({k:c});i++;continue}
 if(/[A-Za-z_]/.test(c)){let j=i;while(j<s.length&&/\w/.test(s[j]))j++;t.push({k:'var',n:s.slice(i,j)});i=j;continue}
 throw Error('Símbolo inesperado "'+c+'"')}return t};
 const parse=s=>{const t=tok(s);let p=0;const k=()=>p<t.length?t[p].k:'fim';
-const bi=()=>{let e=im();while(k()==='iff'){p++;e={t:'iff',a:e,b:im()}}return e};
-const im=()=>{const e=ou();if(k()==='imp'){p++;return{t:'imp',a:e,b:im()}}return e};
-const ou=()=>{let e=co();while(k()==='or'){p++;e={t:'or',a:e,b:co()}}return e};
-const co=()=>{let e=un();while(k()==='and'){p++;e={t:'and',a:e,b:un()}}return e};
-const un=()=>{if(k()==='not'){p++;return{t:'not',a:un()}}
+const bicondicional=()=>{let x=implica();while(k()==='iff'){p++;x={t:'iff',a:x,b:implica()}}return x};
+const implica=()=>{const x=ou();if(k()==='imp'){p++;return{t:'imp',a:x,b:implica()}}return x};
+const ou=()=>{let x=e();while(k()==='or'){p++;x={t:'or',a:x,b:e()}}return x};
+const e=()=>{let x=nega();while(k()==='and'){p++;x={t:'and',a:x,b:nega()}}return x};
+const nega=()=>{if(k()==='not'){p++;return{t:'not',a:nega()}}
 if(k()==='var')return{t:'var',n:t[p++].n};
-if(k()==='('){p++;const e=bi();if(k()!==')')throw Error('Faltou ")"');p++;return e}
+if(k()==='('){p++;const x=bicondicional();if(k()!==')')throw Error('Faltou ")"');p++;return x}
 throw Error('Esperava variável ou "("')};
-if(!t.length)throw Error('Fórmula vazia');const e=bi();if(p<t.length)throw Error('Sobrou texto no fim da fórmula');return e};
+if(!t.length)throw Error('Fórmula vazia');const x=bicondicional();if(p<t.length)throw Error('Sobrou texto no fim da fórmula');return x};
 const P={iff:1,imp:2,or:3,and:4,not:5,var:6},S={iff:'↔',imp:'→',or:'∨',and:'∧'};
 const str=f=>{if(f.t==='var')return f.n;
 if(f.t==='not')return'¬'+(P[f.a.t]<5?'('+str(f.a)+')':str(f.a));
@@ -290,6 +301,7 @@ else cl.push([N(id),N(a),b],[N(id),a,N(b)],[id,a,b],[id,N(a),N(b)]);
 return id};cl.push([g(f)]);return{cl,aux:n}};
 return{parse,str,pref,ev,vars,linha,tabela,forca,cnf,dpll,dimacs,fmtC,sats,tam,alt,dag,sem,tse};
 })();
+
 </script>
 
 <script>
