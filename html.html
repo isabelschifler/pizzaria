@@ -133,7 +133,6 @@ footer{padding:26px 0 44px;color:var(--mu);font-size:.9rem}
 </div>
 <p><strong>Por que a árvore tem essa forma?</strong> Na lista de prioridades, o ∧ é mais forte que o →, então ele junta F e H primeiro, e só depois o → liga o resultado a T. Por isso <code>F ∧ H → T</code> é lido como <code>(F ∧ H) → T</code>: a raiz é o → (o conectivo mais fraco) e o ∧ fica abaixo dele. Regra prática: quanto mais fraco o conectivo, mais perto da raiz. No código, a função <code>implica</code> pede o lado esquerdo à função <code>ou</code>, que chama <code>e</code>, então o ∧ é resolvido antes de o → ser considerado. Se o → fosse mais forte, a leitura seria <code>F ∧ (H → T)</code>, com outro significado: sem frango (F = F) ela daria sempre falso, quando a regra R7 deveria permitir a pizza.</p>
 <p class="mu">Repare que o parêntese não aparece na árvore: a própria estrutura guarda o agrupamento. Na impressão, o programa só coloca parênteses quando a precedência exige.</p>
-<p>Em notação prefixa (sem parênteses): <code id="pref"></code>. Subfórmulas iguais podem ser compartilhadas num <strong>DAG</strong>; a variável <code>F</code> aparece 4 vezes em Φ, mas seria um único nó. Avaliar é um percurso pós-ordem, com custo <strong>O(n)</strong>: verificar um modelo é fácil, mesmo quando achá-lo é difícil.</p>
 </section>
 
 <section id="sat"><h2>3 Satisfatibilidade e busca de modelos</h2>
@@ -497,7 +496,7 @@ if(f.t==='var')return`{ t: 'var', n: '${f.n}' }`;
 if(f.t==='not')return`{ t: 'not',\n${p(i+2)}a: ${codigo(f.a,i+5)} }`;
 return`{ t: '${f.t}',\n${p(i+2)}a: ${codigo(f.a,i+5)},\n${p(i+2)}b: ${codigo(f.b,i+5)} }`};
 $('#ast').textContent=codigo(r7);
-$('#pref').textContent=L.pref(r7);
+
 // FNC
 const cf=L.cnf(phi).cl;
 const PAS=['já é cláusula','já é cláusula','De Morgan','eliminar →','eliminar →','já é cláusula','eliminar →: ¬(F ∧ H) ∨ T; depois De Morgan'];
