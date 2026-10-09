@@ -72,10 +72,10 @@ footer{padding:26px 0 44px;color:var(--mu);font-size:.9rem}
 </style>
 </head>
 <body>
-<header><div class="w"><div class="placa"><small>Lógica para Computação · Engenharia da Computação · [Grupo: Elmar Grossl Junior, João Victor Mendes e Isabel Schifler ]</small>
+<header><div class="w"><div class="placa"><small>Lógica para Computação · Engenharia da Computação · Grupo: Elmar Grossl Junior, João Victor Mendes e Isabel Schifler</small>
 <h1>Pizzaiolo Lógico: montando pizzas com SAT</h1>
 <p>Existe uma pizza que respeita todas as regras do cliente e da cozinha? Usamos lógica proposicional, SAT, FNC e DPLL para descobrir.</p></div></div></header>
-<nav aria-label="Seções"><div class="w"><a href="#mapa">Critérios</a><a href="#contexto">1 Contexto</a><a href="#repr">2 Representação</a><a href="#sat">3 SAT</a><a href="#fnc">4 FNC</a><a href="#lab">5 Laboratório</a><a href="#jogo">6 Jogo</a><a href="#testes">7 Testes</a><a href="#codigo">8 Código</a><a href="#roteiro">9 Roteiro</a><a href="#gloss">10 Glossário</a></div></nav>
+<nav aria-label="Seções"><div class="w"><a href="#mapa">Critérios</a><a href="#contexto">1 Contexto</a><a href="#repr">2 Representação</a><a href="#sat">3 SAT</a><a href="#fnc">4 FNC</a><a href="#lab">5 Laboratório</a><a href="#jogo">6 Jogo</a><a href="#testes">7 Testes</a><a href="#codigo">8 Código</a><a href="#perguntas">9 Perguntas</a></div></nav>
 <main class="w">
 
 <section id="mapa"><h2>Mapa dos critérios</h2>
@@ -86,8 +86,8 @@ footer{padding:26px 0 44px;color:var(--mu);font-size:.9rem}
 <tr><td>C3 · Forma normal conjuntiva</td><td>Seção 4: conversão passo a passo, DIMACS, explosão exponencial, Tseitin</td><td>Convertemos as 7 regras para FNC numa tabela com a conversão de cada uma. O laboratório mostra os 3 passos da conversão, o DIMACS e a transformação de Tseitin, que está implementada.</td></tr>
 <tr><td>C4 · Implementação</td><td>Seção 5 (execução), 7 (testes automáticos) e 8 (código-fonte)</td><td>Deixamos todo o código rodando na própria página, com laboratório de 6 exemplos e 55 testes automáticos visíveis.</td></tr>
 <tr><td>C5 · Modelagem do problema-contexto</td><td>Seção 1: variáveis, restrições em português e em lógica, variante insatisfatível</td><td>Montamos a tabela letra → ingrediente e a tabela regra em português → fórmula, e explicamos por que a variante sem lactose é impossível.</td></tr>
-<tr><td>C6 · Comunicação</td><td>Seção 9: roteiro slide a slide, com o responsável por cada parte; Seção 6: jogo usado na demonstração</td><td>Escrevemos um roteiro slide a slide para caber em 30 minutos e preparamos um cliente do jogo para jogar com a turma.</td></tr>
-<tr><td>C7 · Arguição</td><td>Seção 9 perguntas prováveis e respostas preparadas</td><td>Listamos as perguntas prováveis e escrevemos as respostas.</td></tr>
+<tr><td>C6 · Comunicação</td><td>README: roteiro da apresentação, com o responsável por cada parte; Seção 6: jogo usado na demonstração</td><td>Apresentamos a própria página, seção por seção. O roteiro para caber em 30 minutos, indicando quem fala em cada parte, está no README. Preparamos também um cliente do jogo para jogar com a turma.</td></tr>
+<tr><td>C7 · Arguição</td><td>Seção 9: perguntas prováveis e respostas preparadas</td><td>Listamos as perguntas prováveis e escrevemos as respostas.</td></tr>
 <tr><td>Bônus</td><td>Seções 5 e 6</td><td>Implementamos parser de texto, DPLL com rastro e literal puro, Tseitin, DIMACS e o jogo interativo.</td></tr>
 </tbody></table></div></section>
 
@@ -104,8 +104,7 @@ footer{padding:26px 0 44px;color:var(--mu);font-size:.9rem}
 </section>
 
 <section id="repr"><h2>2 Representação computacional</h2>
-<p>Se os símbolos não tiverem uma ordem de prioridade, o computador não sabe como ler <code>A ∧ B ∨ C</code>: pode ser <code>(A ∧ B) ∨ C</code> ou <code>A ∧ (B ∨ C)</code>, e cada leitura dá um resultado diferente. Isso se chama <strong>ambiguidade</strong>. Para resolver, damos uma prioridade a cada símbolo, como na matemática, em que a multiplicação é feita antes da soma. Na gramática abaixo, cada linha é um nível de prioridade, do que "prende" menos (<code>↔</code>) ao que "prende" mais (<code>¬</code> e os parênteses):</p>
-<p>Cada símbolo tem uma <strong>prioridade</strong>. Do mais fraco ao mais forte:</p>
+<p>Se os símbolos não tiverem uma ordem de prioridade, o computador não sabe como ler <code>A ∧ B ∨ C</code>: pode ser <code>(A ∧ B) ∨ C</code> ou <code>A ∧ (B ∨ C)</code>, e cada leitura dá um resultado diferente. Isso se chama <strong>ambiguidade</strong>. Para resolver, damos uma prioridade a cada símbolo, como na matemática, em que a multiplicação é feita antes da soma. Na lista abaixo, do que "prende" menos ao que "prende" mais:</p>
 <ol>
 <li><code>↔</code> (o mais fraco, fica mais perto da raiz da árvore)</li>
 <li><code>→</code></li>
@@ -114,7 +113,6 @@ footer{padding:26px 0 44px;color:var(--mu);font-size:.9rem}
 <li><code>¬</code> e os parênteses (os mais fortes, são resolvidos primeiro)</li>
 </ol>
 <p>Exemplo: <code>¬A ∧ B → C</code> é lido como <code>((¬A) ∧ B) → C</code>. Primeiro o ¬, depois o ∧, por último o →. Para mudar a ordem, usamos parênteses.</p>
-<br>
 <p>Cada nó da árvore sintática é um objeto com o tipo do conectivo e os filhos. A regra R7, <code>F ∧ H → T</code>, fica assim:</p>
 <br>
 <div class="arv">
@@ -133,9 +131,9 @@ footer{padding:26px 0 44px;color:var(--mu);font-size:.9rem}
 </svg>
 </figure>
 </div>
-<p><strong>Por que a árvore tem essa forma?</strong> Na gramática, o ∧ é mais forte que o →, então ele junta F e H primeiro, e só depois o → liga o resultado a T. Por isso <code>F ∧ H → T</code> é lido como <code>(F ∧ H) → T</code>: a raiz é o → (o conectivo mais fraco) e o ∧ fica abaixo dele. Regra prática: quanto mais fraco o conectivo, mais perto da raiz. No código, a função <code>implica</code> pede o lado esquerdo à função <code>ou</code>, que chama <code>e</code>, então o ∧ é resolvido antes de o → ser considerado. Se o → fosse mais forte, a leitura seria <code>F ∧ (H → T)</code>, com outro significado: sem frango (F = F) ela daria sempre falso, quando a regra R7 deveria permitir a pizza.</p>
+<p><strong>Por que a árvore tem essa forma?</strong> Na lista de prioridades, o ∧ é mais forte que o →, então ele junta F e H primeiro, e só depois o → liga o resultado a T. Por isso <code>F ∧ H → T</code> é lido como <code>(F ∧ H) → T</code>: a raiz é o → (o conectivo mais fraco) e o ∧ fica abaixo dele. Regra prática: quanto mais fraco o conectivo, mais perto da raiz. No código, a função <code>implica</code> pede o lado esquerdo à função <code>ou</code>, que chama <code>e</code>, então o ∧ é resolvido antes de o → ser considerado. Se o → fosse mais forte, a leitura seria <code>F ∧ (H → T)</code>, com outro significado: sem frango (F = F) ela daria sempre falso, quando a regra R7 deveria permitir a pizza.</p>
 <p class="mu">Repare que o parêntese não aparece na árvore: a própria estrutura guarda o agrupamento. Na impressão, o programa só coloca parênteses quando a precedência exige.</p>
-<p>Em notação prefixa (sem parênteses): <code id="pref"></code>. Subfórmulas iguais podem ser compartilhadas num <strong>DAG</strong>;a variável <code>F</code> aparece 4 vezes em Φ, mas seria um único nó. Avaliar é um percurso pós-ordem, com custo <strong>O(n)</strong>: verificar um modelo é fácil, mesmo quando achá-lo é difícil.</p>
+<p>Em notação prefixa (sem parênteses): <code id="pref"></code>. Subfórmulas iguais podem ser compartilhadas num <strong>DAG</strong>; a variável <code>F</code> aparece 4 vezes em Φ, mas seria um único nó. Avaliar é um percurso pós-ordem, com custo <strong>O(n)</strong>: verificar um modelo é fácil, mesmo quando achá-lo é difícil.</p>
 </section>
 
 <section id="sat"><h2>3 Satisfatibilidade e busca de modelos</h2>
@@ -156,7 +154,7 @@ footer{padding:26px 0 44px;color:var(--mu);font-size:.9rem}
 <div class="tw"><table><thead><tr><th>#</th><th>Original</th><th>Passos</th><th>Cláusulas</th></tr></thead><tbody id="t-fnc"></tbody></table></div>
 <p>São <strong id="n-cl"></strong> cláusulas. Em <strong>DIMACS</strong> (variáveis em ordem alfabética, menos = negação, 0 encerra a cláusula):</p>
 <pre id="dimacs"></pre>
-<p><strong>Explosão exponencial:</strong> <code>(X1∧Y1) ∨ … ∨ (Xn∧Yn)</code> tem tamanho linear, mas a FNC tem 2<sup>n</sup> cláusulas (teste no laboratório). <strong>Tseitin</strong> resolve criando uma variável τ por subfórmula (ex.: <code>τ ↔ (a∧b)</code> gera <code>(¬τ∨a)(¬τ∨b)(τ∨¬a∨¬b)</code>). O resultado é <em>equisatisfatível</em> e de tamanho linear. Nesta entrega, Tseitin está explicado, mas não implementado.</p>
+<p><strong>Explosão exponencial:</strong> <code>(X1∧Y1) ∨ … ∨ (Xn∧Yn)</code> tem tamanho linear, mas a FNC tem 2<sup>n</sup> cláusulas (teste no laboratório). <strong>Tseitin</strong> resolve criando uma variável τ por subfórmula (ex.: <code>τ ↔ (a∧b)</code> gera <code>(¬τ∨a)(¬τ∨b)(τ∨¬a∨¬b)</code>). O resultado é <em>equisatisfatível</em> e de tamanho linear. Ele está implementado no laboratório (seção 5): no exemplo "Explosão da FNC", a distribuição gera 64 cláusulas e o Tseitin só 34.</p>
 </section>
 
 <section id="lab"><h2>5 Laboratório interativo</h2>
@@ -183,15 +181,11 @@ footer{padding:26px 0 44px;color:var(--mu);font-size:.9rem}
 </section>
 
 <section id="codigo"><h2>8 Código-fonte</h2>
-<p>O núcleo lógico (tokenização, parser, avaliação, força bruta, FNC, DPLL, DIMACS) é o script abaixo, lido do próprio elemento <code>&lt;script&gt;</code>.</p>
+<p>O núcleo lógico (tokenização, parser, avaliação, força bruta, FNC, DPLL, DIMACS e Tseitin) é o script abaixo, lido do próprio elemento <code>&lt;script&gt;</code>.</p>
 <details><summary>Mostrar o código</summary><pre id="src" style="max-height:480px;overflow:auto"></pre></details>
 </section>
 
-<section id="roteiro"><h2></h2>
-
-
-
-<h3>Perguntas prováveis</h3>
+<section id="perguntas"><h2>9 Perguntas prováveis</h2>
 
 <details><summary>E se o cliente pedisse "queijo em dobro"? Dá para representar isso com as variáveis que usamos?</summary><p>Não do jeito que está. Na lógica proposicional, cada variável só tem dois valores: o ingrediente vai na pizza (V) ou não vai (F). Ela não consegue dizer "quanto". Para representar isso, teríamos que criar variáveis separadas, como Q1 (queijo normal) e Q2 (queijo extra), e acrescentar a regra "Q2 só vale se Q1 for verdadeira". Funciona, mas o número de variáveis cresce rápido, e com isso as 2<sup>n</sup> combinações da força bruta. Para quantidades de verdade, seria preciso uma lógica mais expressiva, como a de primeira ordem, que a matéria ainda não cobre.</p></details>
 
@@ -201,6 +195,9 @@ footer{padding:26px 0 44px;color:var(--mu);font-size:.9rem}
 
 
 </section>
+</main>
+<footer><div class="w">Lógica para Computação · Engenharia da Computação · 5ª fase</div></footer>
+
 <br><br><br><br>
 <script id="nucleo">
 const L = (() => {
@@ -495,7 +492,11 @@ const fb=L.forca(phi);$('#r-fb').innerHTML=`<span class="ok">SAT</span>, primeir
 const dl=L.dpll(L.cnf(L.parse(PHI+' & ~Q')).cl);
 $('#r-dpll').innerHTML=`<span class="bad">INSAT</span>, com ${dl.st.p} propagações e ${dl.st.d} decisões`;
 const r7=L.parse('F & H -> T');
-$('#ast').textContent=JSON.stringify(r7,null,1).replace(/\n\s*/g,' ').replace(/\{ "t"/g,'\n{ "t"');
+const codigo=(f,i=0)=>{const p=n=>' '.repeat(n);
+if(f.t==='var')return`{ t: 'var', n: '${f.n}' }`;
+if(f.t==='not')return`{ t: 'not',\n${p(i+2)}a: ${codigo(f.a,i+5)} }`;
+return`{ t: '${f.t}',\n${p(i+2)}a: ${codigo(f.a,i+5)},\n${p(i+2)}b: ${codigo(f.b,i+5)} }`};
+$('#ast').textContent=codigo(r7);
 $('#pref').textContent=L.pref(r7);
 // FNC
 const cf=L.cnf(phi).cl;
