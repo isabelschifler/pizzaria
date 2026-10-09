@@ -19,7 +19,7 @@ section{padding:26px 0 4px;scroll-margin-top:50px}
 h2{font-size:1.5rem;margin:0 0 .5em;padding-bottom:.2em;border-bottom:3px dotted var(--ac)}h3{font-size:1.08rem;margin:1.3em 0 .3em}
 code,pre,.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.88em}code{background:var(--cd);border:1px solid var(--ln);padding:0 5px;border-radius:4px}
 pre{background:var(--cd);border:1px solid var(--ln);padding:12px;border-radius:6px;overflow-x:auto;line-height:1.45}
-.tw{overflow-x:auto;border:2px dashed var(--ln);border-radius:6px;background:var(--card);margin:10px 0}
+.tw{overflow-x:auto;border:2px dashed var(--ln);padding-left: 20px;border-radius:6px;background:var(--card);margin:10px 0}
 table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{padding:7px 11px;border-bottom:1px dotted var(--ln);text-align:left;vertical-align:top}th{background:var(--as);font-size:.9rem}tr:last-child td{border:0}
 .f{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--cd);border-left:5px solid var(--ac);padding:10px 14px;overflow-x:auto;white-space:nowrap}
 .co{border:2px dashed var(--ac);background:var(--as);padding:10px 14px;border-radius:6px;margin:12px 0}
@@ -81,14 +81,14 @@ footer{padding:26px 0 44px;color:var(--mu);font-size:.9rem}
 <section id="mapa"><h2>Mapa dos critérios</h2>
 <p>Cada linha mostra onde o critério da atividade é atendido nesta página e o que fizemos para atendê-lo.</p>
 <div class="tw"><table><thead><tr><th>Critério</th><th>Onde está atendido</th><th>Passo seguido nesta entrega</th></tr></thead><tbody>
-<tr><td>C1 · Representação computacional</td><td><a href="#repr">Seção 2</a>: gramática, precedência, árvore sintática, notação prefixa, DAG, custo da avaliação</td><td>Desenhamos a árvore sintática da regra R7 (F ∧ H → T), mostramos o objeto que a representa no código e a escrevemos em notação prefixa. O laboratório desenha a árvore de qualquer fórmula e conta nós, altura e nós do DAG.</td></tr>
-<tr><td>C2 · Satisfatibilidade e busca de modelos</td><td><a href="#sat">Seção 3</a>: definições, força bruta, NP-completude, DPLL à mão e no programa</td><td>Rodamos força bruta e DPLL em Φ e na variante do cliente sem lactose (Φ ∧ ¬Q) e fizemos o DPLL à mão, passo a passo.</td></tr>
-<tr><td>C3 · Forma normal conjuntiva</td><td><a href="#fnc">Seção 4</a>: conversão passo a passo, DIMACS, explosão exponencial, Tseitin</td><td>Convertemos as 7 regras para FNC numa tabela com a conversão de cada uma. O laboratório mostra os 3 passos da conversão, o DIMACS e a transformação de Tseitin, que está implementada.</td></tr>
-<tr><td>C4 · Implementação</td><td><a href="#lab">Seção 5</a> (execução), <a href="#testes">7</a> (testes automáticos) e <a href="#codigo">8</a> (código-fonte)</td><td>Deixamos todo o código rodando na própria página, com laboratório de 6 exemplos e 55 testes automáticos visíveis.</td></tr>
-<tr><td>C5 · Modelagem do problema-contexto</td><td><a href="#contexto">Seção 1</a>: variáveis, restrições em português e em lógica, variante insatisfatível</td><td>Montamos a tabela letra → ingrediente e a tabela regra em português → fórmula, e explicamos por que a variante sem lactose é impossível.</td></tr>
-<tr><td>C6 · Comunicação</td><td><a href="#roteiro">Seção 9</a>: roteiro slide a slide, com o responsável por cada parte; <a href="#jogo">Seção 6</a>: jogo usado na demonstração</td><td>Escrevemos um roteiro slide a slide para caber em 30 minutos e preparamos um cliente do jogo para jogar com a turma.</td></tr>
-<tr><td>C7 · Arguição</td><td><a href="#roteiro">Seção 9</a>: perguntas prováveis e respostas preparadas</td><td>Listamos as perguntas prováveis e escrevemos as respostas.</td></tr>
-<tr><td>Bônus</td><td>Seções <a href="#lab">5</a> e <a href="#jogo">6</a></td><td>Implementamos parser de texto, DPLL com rastro e literal puro, Tseitin, DIMACS e o jogo interativo.</td></tr>
+<tr><td>C1 · Representação computacional</td><td>Seção 2: gramática, precedência, árvore sintática, notação prefixa, DAG, custo da avaliação</td><td>Desenhamos a árvore sintática da regra R7 (F ∧ H → T), mostramos o objeto que a representa no código e a escrevemos em notação prefixa. O laboratório desenha a árvore de qualquer fórmula e conta nós, altura e nós do DAG.</td></tr>
+<tr><td>C2 · Satisfatibilidade e busca de modelos</td><td>Seção 3: definições, força bruta, NP-completude, DPLL à mão e no programa</td><td>Rodamos força bruta e DPLL em Φ e na variante do cliente sem lactose (Φ ∧ ¬Q) e fizemos o DPLL à mão, passo a passo.</td></tr>
+<tr><td>C3 · Forma normal conjuntiva</td><td>Seção 4: conversão passo a passo, DIMACS, explosão exponencial, Tseitin</td><td>Convertemos as 7 regras para FNC numa tabela com a conversão de cada uma. O laboratório mostra os 3 passos da conversão, o DIMACS e a transformação de Tseitin, que está implementada.</td></tr>
+<tr><td>C4 · Implementação</td><td>Seção 5 (execução), 7 (testes automáticos) e 8 (código-fonte)</td><td>Deixamos todo o código rodando na própria página, com laboratório de 6 exemplos e 55 testes automáticos visíveis.</td></tr>
+<tr><td>C5 · Modelagem do problema-contexto</td><td>Seção 1: variáveis, restrições em português e em lógica, variante insatisfatível</td><td>Montamos a tabela letra → ingrediente e a tabela regra em português → fórmula, e explicamos por que a variante sem lactose é impossível.</td></tr>
+<tr><td>C6 · Comunicação</td><td>Seção 9: roteiro slide a slide, com o responsável por cada parte; Seção 6: jogo usado na demonstração</td><td>Escrevemos um roteiro slide a slide para caber em 30 minutos e preparamos um cliente do jogo para jogar com a turma.</td></tr>
+<tr><td>C7 · Arguição</td><td>Seção 9 perguntas prováveis e respostas preparadas</td><td>Listamos as perguntas prováveis e escrevemos as respostas.</td></tr>
+<tr><td>Bônus</td><td>Seções 5 e 6</td><td>Implementamos parser de texto, DPLL com rastro e literal puro, Tseitin, DIMACS e o jogo interativo.</td></tr>
 </tbody></table></div></section>
 
 <section id="contexto"><h2>1 Contexto e modelagem</h2>
@@ -114,16 +114,9 @@ footer{padding:26px 0 44px;color:var(--mu);font-size:.9rem}
 <li><code>¬</code> e os parênteses (os mais fortes, são resolvidos primeiro)</li>
 </ol>
 <p>Exemplo: <code>¬A ∧ B → C</code> é lido como <code>((¬A) ∧ B) → C</code>. Primeiro o ¬, depois o ∧, por último o →. Para mudar a ordem, usamos parênteses.</p>
-<details><summary>Ver a gramática formal (BNF)</summary>
-<pre>
-bicondicional ::= implicação ( "↔" implicação )*
-implicação    ::= disjunção ( "→" implicação )?
-disjunção     ::= conjunção ( "∨" conjunção )*
-conjunção     ::= negação ( "∧" negação )*
-negação       ::= "¬" negação | VARIÁVEL | "(" bicondicional ")"</pre>
-<p class="mu">Cada linha é feita da linha de baixo, então a de baixo é resolvida primeiro. Dentro de parênteses, a leitura volta à primeira linha.</p>
-</details>
+<br>
 <p>Cada nó da árvore sintática é um objeto com o tipo do conectivo e os filhos. A regra R7, <code>F ∧ H → T</code>, fica assim:</p>
+<br>
 <div class="arv">
 <pre id="ast"></pre>
 <figure>
@@ -194,14 +187,9 @@ negação       ::= "¬" negação | VARIÁVEL | "(" bicondicional ")"</pre>
 <details><summary>Mostrar o código</summary><pre id="src" style="max-height:480px;overflow:auto"></pre></details>
 </section>
 
-<section id="roteiro"><h2>9 Roteiro da apresentação (30 min)</h2>
-<div class="tw"><table><thead><tr><th>Slide</th><th>Conteúdo</th><th>Quem</th></tr></thead><tbody>
-<tr><td>1–2</td><td>Pergunta, variáveis e as 7 restrições</td><td>[Integrante 1]</td></tr>
-<tr><td>3–4</td><td>Gramática, precedência, árvore de R7, prefixa, DAG, O(n)</td><td>[Integrante 2]</td></tr>
-<tr><td>5–7</td><td>SAT, força bruta, NP-completude, DPLL à mão (lactose)</td><td>[Integrante 3]</td></tr>
-<tr><td>8–9</td><td>FNC, DIMACS, explosão e Tseitin</td><td>[Integrante 4]</td></tr>
-<tr><td>10</td><td>Demonstração: laboratório e um cliente do jogo com a turma</td><td>[Integrante 1]</td></tr>
-<tr><td>11</td><td>Conclusões e limitações</td><td>[Integrante 4]</td></tr></tbody></table></div>
+<section id="roteiro"><h2></h2>
+
+
 
 <h3>Perguntas prováveis</h3>
 
@@ -212,99 +200,278 @@ negação       ::= "¬" negação | VARIÁVEL | "(" bicondicional ")"</pre>
 <details><summary>Por que o teste de explosão espera exatamente 8 cláusulas para (X1∧Y1) ∨ (X2∧Y2) ∨ (X3∧Y3)?</summary><p>Porque a distribuição do ∨ sobre o ∧ monta cada cláusula escolhendo um literal de cada par: X1 ou Y1, depois X2 ou Y2, depois X3 ou Y3. São 2 × 2 × 2 = 8 combinações, e cada uma vira uma cláusula, como (X1 ∨ X2 ∨ X3) ou (Y1 ∨ X2 ∨ Y3). Com n pares, são 2<sup>n</sup> cláusulas. No código, isso aparece nos dois laços aninhados da função <code>dist</code>, que combinam toda cláusula da esquerda com toda cláusula da direita. O teste confere que o código segue essa conta. Por isso o limite de 2000 cláusulas na função: com 11 pares ele já seria ultrapassado (2<sup>11</sup> = 2048).</p></details>
 
 
-<strong>Uso de IA:</strong> [declarar aqui, conforme exigido na atividade].</p>
 </section>
-
-
-<section id="gloss"><h2>10 Glossário</h2><details><summary>Abrir glossário</summary><dl><dt>Cláusula</dt><dd>“Ou” de literais, como (¬C ∨ R).</dd><dt>Cláusula vazia (□)</dt><dd>Cláusula sem literais: nunca é verdadeira e indica conflito.</dd><dt>DIMACS</dt><dd>Formato de texto padrão para entregar uma FNC a um resolvedor SAT.</dd><dt>DPLL</dt><dd>Algoritmo de busca de modelos: propaga o que é obrigatório e chuta com retrocesso.</dd><dt>Equisatisfatível</dt><dd>Duas fórmulas são equisatisfatíveis quando uma tem modelo se, e só se, a outra tem.</dd><dt>FNC</dt><dd>Fórmula escrita como “e” de cláusulas.</dd><dt>Literal</dt><dd>Uma variável ou a negação dela.</dd><dt>Modelo</dt><dd>Valoração que torna a fórmula verdadeira. Aqui, uma pizza que respeita todas as regras.</dd><dt>NP-completo</dt><dd>Os problemas mais difíceis da classe NP; SAT foi o primeiro provado assim.</dd><dt>Propagação unitária</dt><dd>Cláusula com um só literal livre obriga esse literal.</dd><dt>Retrocesso</dt><dd>Voltar atrás e tentar a outra opção depois de um conflito.</dd><dt>Tseitin</dt><dd>Conversão para FNC que cria variáveis novas e mantém o tamanho linear.</dd><dt>Valoração</dt><dd>Atribuir V ou F a todas as variáveis.</dd></dl></details></section>
-</main>
-<footer><div class="w">Lógica para Computação · Engenharia da Computação · 5ª fase</div></footer>
-
+<br><br><br><br>
 <script id="nucleo">
-const L=(()=>{
-const tok=s=>{const t=[];let i=0;while(i<s.length){const c=s[i];
-if(/\s/.test(c)){i++;continue}
-const m=[['<->','iff'],['<=>','iff'],['->','imp'],['=>','imp'],['↔','iff'],['→','imp']].find(([x])=>s.startsWith(x,i));
-if(m){t.push({k:m[1]});i+=m[0].length;continue}
-if('¬~!'.includes(c)){t.push({k:'not'});i++;continue}
-if('∧&'.includes(c)){t.push({k:'and'});i++;continue}
-if('∨|'.includes(c)){t.push({k:'or'});i++;continue}
-if(c==='('||c===')'){t.push({k:c});i++;continue}
-if(/[A-Za-z_]/.test(c)){let j=i;while(j<s.length&&/\w/.test(s[j]))j++;t.push({k:'var',n:s.slice(i,j)});i=j;continue}
-throw Error('Símbolo inesperado "'+c+'"')}return t};
-const parse=s=>{const t=tok(s);let p=0;const k=()=>p<t.length?t[p].k:'fim';
-const bicondicional=()=>{let x=implica();while(k()==='iff'){p++;x={t:'iff',a:x,b:implica()}}return x};
-const implica=()=>{const x=ou();if(k()==='imp'){p++;return{t:'imp',a:x,b:implica()}}return x};
-const ou=()=>{let x=e();while(k()==='or'){p++;x={t:'or',a:x,b:e()}}return x};
-const e=()=>{let x=nega();while(k()==='and'){p++;x={t:'and',a:x,b:nega()}}return x};
-const nega=()=>{if(k()==='not'){p++;return{t:'not',a:nega()}}
-if(k()==='var')return{t:'var',n:t[p++].n};
-if(k()==='('){p++;const x=bicondicional();if(k()!==')')throw Error('Faltou ")"');p++;return x}
-throw Error('Esperava variável ou "("')};
-if(!t.length)throw Error('Fórmula vazia');const x=bicondicional();if(p<t.length)throw Error('Sobrou texto no fim da fórmula');return x};
-const P={iff:1,imp:2,or:3,and:4,not:5,var:6},S={iff:'↔',imp:'→',or:'∨',and:'∧'};
-const str=f=>{if(f.t==='var')return f.n;
-if(f.t==='not')return'¬'+(P[f.a.t]<5?'('+str(f.a)+')':str(f.a));
-const p=P[f.t],pa=P[f.a.t],pb=P[f.b.t],l=str(f.a),r=str(f.b);
-return((pa<p||(pa===p&&f.t==='imp'))?'('+l+')':l)+' '+S[f.t]+' '+((pb<p||(pb===p&&f.t==='iff'))?'('+r+')':r)};
-const pref=f=>f.t==='var'?f.n:f.t==='not'?'¬ '+pref(f.a):S[f.t]+' '+pref(f.a)+' '+pref(f.b);
-const ev=(f,v)=>{switch(f.t){case'var':return!!v[f.n];case'not':return!ev(f.a,v);case'and':return ev(f.a,v)&&ev(f.b,v);
-case'or':return ev(f.a,v)||ev(f.b,v);case'imp':return!ev(f.a,v)||ev(f.b,v);case'iff':return ev(f.a,v)===ev(f.b,v)}};
-const vars=f=>{const s=new Set;(function r(g){if(g.t==='var')s.add(g.n);else{r(g.a);if(g.b)r(g.b)}})(f);return[...s].sort()};
-const linha=(vs,i)=>Object.fromEntries(vs.map((x,k)=>[x,((i>>(vs.length-1-k))&1)===0]));
-const tabela=f=>{const vs=vars(f),n=2**vs.length;if(vs.length>20)throw Error('Variáveis demais para a tabela-verdade');
-let m=0,prim=null;const rows=[];for(let i=0;i<n;i++){const v=linha(vs,i),r=ev(f,v);if(r){m++;prim=prim||v}if(rows.length<128)rows.push([v,r])}
-return{vs,n,m,prim,rows,cls:m===n?'válida (tautologia)':m===0?'insatisfatível (contradição)':'satisfatível (contingente)'}};
-const forca=f=>{const vs=vars(f);for(let i=0;i<2**vs.length;i++){const v=linha(vs,i);if(ev(f,v))return{sat:true,i:i+1}}return{sat:false,i:2**vs.length}};
-const neg=l=>l[0]==='-'?l.slice(1):'-'+l,vd=neg2=>neg2[0]==='-'?neg2.slice(1):neg2;
-const dd=c=>[...new Map(c.map(x=>[x.join(','),x])).values()];
-const norm=c=>{const s=[...new Set(c)];return s.some(l=>s.includes(neg(l)))?null:s.sort()};
-const nnf=(f,n=false)=>{switch(f.t){case'var':return n?{t:'not',a:f}:f;case'not':return nnf(f.a,!n);
-case'and':case'or':return{t:n?(f.t==='and'?'or':'and'):f.t,a:nnf(f.a,n),b:nnf(f.b,n)};
-case'imp':return nnf({t:'or',a:{t:'not',a:f.a},b:f.b},n);
-case'iff':return nnf({t:'and',a:{t:'imp',a:f.a,b:f.b},b:{t:'imp',a:f.b,b:f.a}},n)}};
-const dist=f=>{if(f.t==='var')return[[f.n]];if(f.t==='not')return[['-'+f.a.n]];
-const A=dist(f.a),B=dist(f.b);if(f.t==='and')return dd([...A,...B]);
-if(A.length*B.length>2000)throw Error('Explosão da FNC: mais de 2000 cláusulas (use Tseitin)');
-const r=[];for(const x of A)for(const y of B){const c=norm([...x,...y]);if(c)r.push(c)}return dd(r)};
-const cnf=f=>{const n=nnf(f);return{nnf:n,cl:dist(n)}};
-const fmtL=l=>l[0]==='-'?'¬'+l.slice(1):l,fmtC=c=>c.length?'('+c.map(fmtL).join(' ∨ ')+')':'□';
-const sats=(c,v)=>c.some(l=>l[0]==='-'?!v[l.slice(1)]:!!v[l]);
-const dpll=cl=>{const tr=[],st={d:0,p:0,c:0,l:0};
-const simp=(cs,l)=>cs.filter(c=>!c.includes(l)).map(c=>c.filter(x=>x!==neg(l)));
-const rec=(cs,a,n)=>{for(;;){
-if(cs.some(c=>!c.length)){st.c++;tr.push(['conflito','Conflito: surgiu a cláusula vazia □',n]);return null}
-if(!cs.length){tr.push(['sat','Todas as cláusulas satisfeitas: modelo encontrado',n]);return a}
-const u=cs.find(c=>c.length===1);
-if(u){const l=u[0];a={...a,[vd(l)]:l[0]!=='-'};st.p++;tr.push(['unit','Propagação unitária: '+vd(l)+' = '+(l[0]==='-'?'F':'V'),n]);cs=simp(cs,l);continue}
-const ls=new Set(cs.flat()),pu=[...ls].find(l=>!ls.has(neg(l)));
-if(pu){a={...a,[vd(pu)]:pu[0]!=='-'};st.l++;tr.push(['puro','Literal puro: '+vd(pu)+' = '+(pu[0]==='-'?'F':'V')+' ('+fmtL(pu)+' só aparece com esse sinal)',n]);cs=cs.filter(c=>!c.includes(pu));continue}
-break}
-const x=vd(cs[0][0]);
-for(const v of[true,false]){st.d++;tr.push(['dec','Decisão: '+x+' = '+(v?'V':'F'),n]);
-const r=rec(simp(cs,v?x:'-'+x),{...a,[x]:v},n+1);if(r)return r;tr.push(['back','Retrocesso: '+x+' = '+(v?'V':'F')+' leva a conflito',n])}
-return null};
-const m=rec(cl.map(c=>[...c]),{},0);return{sat:!!m,m,tr,st}};
-const dimacs=cl=>{const vs=[...new Set(cl.flat().map(vd))].sort(),id=new Map(vs.map((x,i)=>[x,i+1]));
-return['c '+vs.map(x=>x+'='+id.get(x)).join(' '),'p cnf '+vs.length+' '+cl.length,...cl.map(c=>c.map(l=>l[0]==='-'?-id.get(l.slice(1)):id.get(l)).join(' ')+' 0')].join('\n')};
-const tam=f=>f.t==='var'?1:1+tam(f.a)+(f.b?tam(f.b):0);
-const alt=f=>f.t==='var'?1:1+Math.max(alt(f.a),f.b?alt(f.b):0);
-const chave=f=>f.t==='var'?f.n:f.t+'('+chave(f.a)+(f.b?','+chave(f.b):'')+')';
-const dag=f=>{const s=new Set;(function r(g){s.add(chave(g));if(g.t!=='var'){r(g.a);if(g.b)r(g.b)}})(f);return s.size};
-const sem=f=>{if(f.t==='var')return f;if(f.t==='not')return{t:'not',a:sem(f.a)};const a=sem(f.a),b=sem(f.b);
-if(f.t==='imp')return{t:'or',a:{t:'not',a},b};
-if(f.t==='iff')return{t:'and',a:{t:'or',a:{t:'not',a},b},b:{t:'or',a:{t:'not',a:b},b:a}};
-return{t:f.t,a,b}};
-const tse=f=>{let n=0;const cl=[],N=neg;const g=x=>{if(x.t==='var')return x.n;const id='τ'+(++n),a=g(x.a),b=x.b?g(x.b):null;
-if(x.t==='not')cl.push([N(id),N(a)],[id,a]);
-else if(x.t==='and')cl.push([N(id),a],[N(id),b],[id,N(a),N(b)]);
-else if(x.t==='or')cl.push([N(id),a,b],[id,N(a)],[id,N(b)]);
-else if(x.t==='imp')cl.push([N(id),N(a),b],[id,a],[id,N(b)]);
-else cl.push([N(id),N(a),b],[N(id),a,N(b)],[id,a,b],[id,N(a),N(b)]);
-return id};cl.push([g(f)]);return{cl,aux:n}};
-return{parse,str,pref,ev,vars,linha,tabela,forca,cnf,dpll,dimacs,fmtC,sats,tam,alt,dag,sem,tse};
-})();
+const L = (() => {
+  // =========================================================================
+  // 1. O TRADUTOR (TOKENIZER E PARSER)
+  // Transforma o texto digitado (ex: "A -> B") em uma árvore que o PC entende
+  // =========================================================================
 
+  const tok = (s) => {
+    const t = [];
+    let i = 0;
+    while (i < s.length) {
+      const c = s[i];
+      if (/\s/.test(c)) { i++; continue; }
+      const m = [['<->', 'iff'], ['<=>', 'iff'], ['->', 'imp'], ['=>', 'imp'], ['↔', 'iff'], ['→', 'imp']].find(([x]) => s.startsWith(x, i));
+      if (m) { t.push({ k: m[1] }); i += m[0].length; continue; }
+      if ('¬~!'.includes(c)) { t.push({ k: 'not' }); i++; continue; }
+      if ('∧&'.includes(c)) { t.push({ k: 'and' }); i++; continue; }
+      if ('∨|'.includes(c)) { t.push({ k: 'or' }); i++; continue; }
+      if (c === '(' || c === ')') { t.push({ k: c }); i++; continue; }
+      if (/[A-Za-z_]/.test(c)) {
+        let j = i;
+        while (j < s.length && /\w/.test(s[j])) j++;
+        t.push({ k: 'var', n: s.slice(i, j) });
+        i = j;
+        continue;
+      }
+      throw Error('Símbolo inesperado "' + c + '"');
+    }
+    return t;
+  };
+
+  const parse = (s) => {
+    const t = tok(s);
+    let p = 0;
+    const k = () => p < t.length ? t[p].k : 'fim';
+
+    const bicondicional = () => { let x = implica(); while (k() === 'iff') { p++; x = { t: 'iff', a: x, b: implica() }; } return x; };
+    const implica = () => { const x = ou(); if (k() === 'imp') { p++; return { t: 'imp', a: x, b: implica() }; } return x; };
+    const ou = () => { let x = e(); while (k() === 'or') { p++; x = { t: 'or', a: x, b: e() }; } return x; };
+    const e = () => { let x = nega(); while (k() === 'and') { p++; x = { t: 'and', a: x, b: nega() }; } return x; };
+    const nega = () => {
+      if (k() === 'not') { p++; return { t: 'not', a: nega() }; }
+      if (k() === 'var') return { t: 'var', n: t[p++].n };
+      if (k() === '(') {
+        p++;
+        const x = bicondicional();
+        if (k() !== ')') throw Error('Faltou ")"');
+        p++;
+        return x;
+      }
+      throw Error('Esperava variável ou "("');
+    };
+
+    if (!t.length) throw Error('Fórmula vazia');
+    const x = bicondicional();
+    if (p < t.length) throw Error('Sobrou texto no fim da fórmula');
+    return x;
+  };
+
+  const P = { iff: 1, imp: 2, or: 3, and: 4, not: 5, var: 6 };
+  const S = { iff: '↔', imp: '→', or: '∨', and: '∧' };
+
+  const str = (f) => {
+    if (f.t === 'var') return f.n;
+    if (f.t === 'not') return '¬' + (P[f.a.t] < 5 ? '(' + str(f.a) + ')' : str(f.a));
+    const p = P[f.t], pa = P[f.a.t], pb = P[f.b.t], l = str(f.a), r = str(f.b);
+    return ((pa < p || (pa === p && f.t === 'imp')) ? '(' + l + ')' : l) + ' ' + S[f.t] + ' ' + ((pb < p || (pb === p && f.t === 'iff')) ? '(' + r + ')' : r);
+  };
+
+  const pref = (f) => f.t === 'var' ? f.n : f.t === 'not' ? '¬ ' + pref(f.a) : S[f.t] + ' ' + pref(f.a) + ' ' + pref(f.b);
+
+  // =========================================================================
+  // 2. TESTADOR (FORÇA BRUTA E TABELA VERDADE)
+  // =========================================================================
+
+  const ev = (f, v) => {
+    switch (f.t) {
+      case 'var': return !!v[f.n];
+      case 'not': return !ev(f.a, v);
+      case 'and': return ev(f.a, v) && ev(f.b, v);
+      case 'or': return ev(f.a, v) || ev(f.b, v);
+      case 'imp': return !ev(f.a, v) || ev(f.b, v);
+      case 'iff': return ev(f.a, v) === ev(f.b, v);
+    }
+  };
+
+  const vars = (f) => {
+    const s = new Set();
+    (function r(g) {
+      if (g.t === 'var') s.add(g.n);
+      else { r(g.a); if (g.b) r(g.b); }
+    })(f);
+    return [...s].sort();
+  };
+
+  const linha = (vs, i) => Object.fromEntries(vs.map((x, k) => [x, ((i >> (vs.length - 1 - k)) & 1) === 0]));
+
+  const tabela = (f) => {
+    const vs = vars(f), n = 2 ** vs.length;
+    if (vs.length > 20) throw Error('Variáveis demais para a tabela-verdade');
+    let m = 0, prim = null;
+    const rows = [];
+    for (let i = 0; i < n; i++) {
+      const v = linha(vs, i), r = ev(f, v);
+      if (r) { m++; prim = prim || v; }
+      if (rows.length < 128) rows.push([v, r]);
+    }
+    return { vs, n, m, prim, rows, cls: m === n ? 'válida (tautologia)' : m === 0 ? 'insatisfatível (contradição)' : 'satisfatível (contingente)' };
+  };
+
+  const forca = (f) => {
+    const vs = vars(f);
+    for (let i = 0; i < 2 ** vs.length; i++) {
+      const v = linha(vs, i);
+      if (ev(f, v)) return { sat: true, i: i + 1 };
+    }
+    return { sat: false, i: 2 ** vs.length };
+  };
+
+  // =========================================================================
+  // 3. ORGANIZADOR FNC (FORMA NORMAL CONJUNTIVA)
+  // Simplifica as fórmulas para o algoritmo inteligente poder trabalhar
+  // =========================================================================
+
+  const neg = (l) => l[0] === '-' ? l.slice(1) : '-' + l;
+  const vd = (neg2) => neg2[0] === '-' ? neg2.slice(1) : neg2;
+  const dd = (c) => [...new Map(c.map(x => [x.join(','), x])).values()];
+  const norm = (c) => {
+    const s = [...new Set(c)];
+    return s.some(l => s.includes(neg(l))) ? null : s.sort();
+  };
+
+  const nnf = (f, n = false) => {
+    switch (f.t) {
+      case 'var': return n ? { t: 'not', a: f } : f;
+      case 'not': return nnf(f.a, !n);
+      case 'and':
+      case 'or': return { t: n ? (f.t === 'and' ? 'or' : 'and') : f.t, a: nnf(f.a, n), b: nnf(f.b, n) };
+      case 'imp': return nnf({ t: 'or', a: { t: 'not', a: f.a }, b: f.b }, n);
+      case 'iff': return nnf({ t: 'and', a: { t: 'imp', a: f.a, b: f.b }, b: { t: 'imp', a: f.b, b: f.a } }, n);
+    }
+  };
+
+  const dist = (f) => {
+    if (f.t === 'var') return [[f.n]];
+    if (f.t === 'not') return [['-' + f.a.n]];
+    const A = dist(f.a), B = dist(f.b);
+    if (f.t === 'and') return dd([...A, ...B]);
+    if (A.length * B.length > 2000) throw Error('Explosão da FNC: mais de 2000 cláusulas (use Tseitin)');
+    const r = [];
+    for (const x of A) {
+      for (const y of B) {
+        const c = norm([...x, ...y]);
+        if (c) r.push(c);
+      }
+    }
+    return dd(r);
+  };
+
+  const cnf = (f) => {
+    const n = nnf(f);
+    return { nnf: n, cl: dist(n) };
+  };
+
+  const fmtL = (l) => l[0] === '-' ? '¬' + l.slice(1) : l;
+  const fmtC = (c) => c.length ? '(' + c.map(fmtL).join(' ∨ ') + ')' : '□';
+  const sats = (c, v) => c.some(l => l[0] === '-' ? !v[l.slice(1)] : !!v[l]);
+
+  // =========================================================================
+  // 4. O DETETIVE (DPLL)
+  // Tenta resolver o problema usando deduções lógicas
+  // =========================================================================
+
+  const dpll = (cl) => {
+    const tr = [], st = { d: 0, p: 0, c: 0, l: 0 };
+    const simp = (cs, l) => cs.filter(c => !c.includes(l)).map(c => c.filter(x => x !== neg(l)));
+    
+    const rec = (cs, a, n) => {
+      for (;;) {
+        if (cs.some(c => !c.length)) {
+          st.c++;
+          tr.push(['conflito', 'Conflito: surgiu a cláusula vazia □', n]);
+          return null;
+        }
+        if (!cs.length) {
+          tr.push(['sat', 'Todas as cláusulas satisfeitas: modelo encontrado', n]);
+          return a;
+        }
+        const u = cs.find(c => c.length === 1);
+        if (u) {
+          const l = u[0];
+          a = { ...a, [vd(l)]: l[0] !== '-' };
+          st.p++;
+          tr.push(['unit', 'Propagação unitária: ' + vd(l) + ' = ' + (l[0] === '-' ? 'F' : 'V'), n]);
+          cs = simp(cs, l);
+          continue;
+        }
+        const ls = new Set(cs.flat()), pu = [...ls].find(l => !ls.has(neg(l)));
+        if (pu) {
+          a = { ...a, [vd(pu)]: pu[0] !== '-' };
+          st.l++;
+          tr.push(['puro', 'Literal puro: ' + vd(pu) + ' = ' + (pu[0] === '-' ? 'F' : 'V') + ' (' + fmtL(pu) + ' só aparece com esse sinal)', n]);
+          cs = cs.filter(c => !c.includes(pu));
+          continue;
+        }
+        break;
+      }
+      const x = vd(cs[0][0]);
+      for (const v of [true, false]) {
+        st.d++;
+        tr.push(['dec', 'Decisão: ' + x + ' = ' + (v ? 'V' : 'F'), n]);
+        const r = rec(simp(cs, v ? x : '-' + x), { ...a, [x]: v }, n + 1);
+        if (r) return r;
+        tr.push(['back', 'Retrocesso: ' + x + ' = ' + (v ? 'V' : 'F') + ' leva a conflito', n]);
+      }
+      return null;
+    };
+    const m = rec(cl.map(c => [...c]), {}, 0);
+    return { sat: !!m, m, tr, st };
+  };
+
+  const dimacs = (cl) => {
+    const vs = [...new Set(cl.flat().map(vd))].sort(), id = new Map(vs.map((x, i) => [x, i + 1]));
+    return ['c ' + vs.map(x => x + '=' + id.get(x)).join(' '), 'p cnf ' + vs.length + ' ' + cl.length, ...cl.map(c => c.map(l => l[0] === '-' ? -id.get(l.slice(1)) : id.get(l)).join(' ') + ' 0')].join('\n');
+  };
+
+  const tam = (f) => f.t === 'var' ? 1 : 1 + tam(f.a) + (f.b ? tam(f.b) : 0);
+  const alt = (f) => f.t === 'var' ? 1 : 1 + Math.max(alt(f.a), f.b ? alt(f.b) : 0);
+  const chave = (f) => f.t === 'var' ? f.n : f.t + '(' + chave(f.a) + (f.b ? ',' + chave(f.b) : '') + ')';
+  
+  const dag = (f) => {
+    const s = new Set();
+    (function r(g) {
+      s.add(chave(g));
+      if (g.t !== 'var') {
+        r(g.a);
+        if (g.b) r(g.b);
+      }
+    })(f);
+    return s.size;
+  };
+
+  const sem = (f) => {
+    if (f.t === 'var') return f;
+    if (f.t === 'not') return { t: 'not', a: sem(f.a) };
+    const a = sem(f.a), b = sem(f.b);
+    if (f.t === 'imp') return { t: 'or', a: { t: 'not', a }, b };
+    if (f.t === 'iff') return { t: 'and', a: { t: 'or', a: { t: 'not', a }, b }, b: { t: 'or', a: { t: 'not', a: b }, b: a } };
+    return { t: f.t, a, b };
+  };
+
+  const tse = (f) => {
+    let n = 0;
+    const cl = [], N = neg;
+    const g = (x) => {
+      if (x.t === 'var') return x.n;
+      const id = 'τ' + (++n), a = g(x.a), b = x.b ? g(x.b) : null;
+      if (x.t === 'not') cl.push([N(id), N(a)], [id, a]);
+      else if (x.t === 'and') cl.push([N(id), a], [N(id), b], [id, N(a), N(b)]);
+      else if (x.t === 'or') cl.push([N(id), a, b], [id, N(a)], [id, N(b)]);
+      else if (x.t === 'imp') cl.push([N(id), N(a), b], [id, a], [id, N(b)]);
+      else cl.push([N(id), N(a), b], [N(id), a, N(b)], [id, a, b], [id, N(a), N(b)]);
+      return id;
+    };
+    cl.push([g(f)]);
+    return { cl, aux: n };
+  };
+
+  return { parse, str, pref, ev, vars, linha, tabela, forca, cnf, dpll, dimacs, fmtC, sats, tam, alt, dag, sem, tse };
+})();
 </script>
 
 <script>
@@ -442,8 +609,6 @@ const ps=T.filter(x=>x[2]).length;
 $('#t-res').innerHTML=`<strong>${ps} de ${T.length} testes passaram</strong> ${ps===T.length?'✅':'❌'}`;
 $('#t-lin').innerHTML=T.map(x=>`<tr><td>${esc(x[0])}</td><td class="mono">${esc(x[1].length>50?x[1].slice(0,47)+'…':x[1])}</td><td>${x[2]?'✅':'❌'}</td></tr>`).join('');
 $('#src').textContent=$('#nucleo').textContent.trim();
-
-
 
 })();
 </script>
